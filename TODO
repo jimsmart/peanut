@@ -1,0 +1,42 @@
+TODO
+====
+
+- Switch existing reflect stuff in Write to use a reflect walker.
+
+- Writers
+ - Should writers throw an error if the given type to write has no tagged fields?
+ - Or should they simply fall back to using field names when tags are not present?
+
+
+- Logging for CSV and Excel writers on completion, detailing files written?
+  Should be exposed as metadata.
+
+
+- Arguably, the metadata stuff doesn't belong in this package? - seperation of concerns, and that.
+
+
+New writer types
+----------------
+
+SQLiteWriter
+- TODO
+
+JSONStreamWriter
+- See https://en.wikipedia.org/wiki/JSON_streaming
+- To futz about with tags/etc, see https://stackoverflow.com/questions/42546519/how-do-i-dynamically-change-the-structs-json-tag
+
+
+
+
+
+
+Done
+====
+
+- Metadata reflector should walk structs.
+- Metadata reflector should handle more types.
+ - Some kind of third-party reflection walker package? - reflectwalk
+ 
+- Idea: structs could have a PrepareMetadata() method, which is called just before metadata is scraped from the struct (to facilitate late computation of metadata values)
+
+
