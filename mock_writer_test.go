@@ -1,7 +1,7 @@
 package peanut_test
 
 import (
-	"github.com/jimsmart/peanut"
+	"github.com/jimsmart/elektra/scraper/peanut"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
