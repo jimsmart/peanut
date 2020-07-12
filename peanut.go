@@ -7,6 +7,7 @@ import (
 	"unicode/utf8"
 )
 
+// Writer defines a record-based writer.
 type Writer interface {
 	// Write is called to persist records.
 	Write(r interface{}) error

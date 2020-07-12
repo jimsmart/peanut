@@ -12,7 +12,7 @@ import (
 
 var _ Writer = &LogWriter{}
 
-// implements peanut.Writer
+// LogWriter is a type of peanut.Writer that writes to a log.Logger, on os.Stderr.
 type LogWriter struct {
 	*writer
 	Logger  *log.Logger
@@ -54,6 +54,7 @@ func (w *LogWriter) Write(x interface{}) error {
 	return nil
 }
 
+// Close should be called after successfully writing records.
 func (w *LogWriter) Close() error {
 	if w.Verbose {
 		w.Logger.Println("Called LogWriter.Close")
@@ -61,6 +62,7 @@ func (w *LogWriter) Close() error {
 	return nil
 }
 
+// Cancel should be called in the event of an error occurring.
 func (w *LogWriter) Cancel() error {
 	if w.Verbose {
 		w.Logger.Println("Called LogWriter.Cancel")

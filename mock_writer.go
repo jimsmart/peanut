@@ -8,7 +8,7 @@ import (
 
 var _ Writer = &MockWriter{}
 
-// implements peanut.Writer
+// MockWriter is a type of peanut.Writer that captures data, for testing purposes.
 type MockWriter struct {
 	*writer
 	Headers            map[string][]string
@@ -56,11 +56,13 @@ func (w *MockWriter) Write(x interface{}) error {
 	return nil
 }
 
+// Close should be called after successfully writing records.
 func (w *MockWriter) Close() error {
 	w.CalledClose++
 	return nil
 }
 
+// Cancel should be called in the event of an error occurring.
 func (w *MockWriter) Cancel() error {
 	w.CalledCancel++
 	return nil

@@ -7,7 +7,7 @@ import (
 
 var _ Writer = &ExcelWriter{}
 
-// implements peanut.Writer
+// ExcelWriter is a type of peanut.Writer that writes Excel files.
 type ExcelWriter struct {
 	*writer
 	prefix      string
@@ -70,6 +70,7 @@ func (w *ExcelWriter) Write(x interface{}) error {
 	return excel.AddRow(excelValuesFrom(x)...)
 }
 
+// Close the writer, ensuring all files are saved.
 func (w *ExcelWriter) Close() error {
 	var rerr error
 	for _, excel := range w.excelByType {
