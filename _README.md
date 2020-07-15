@@ -7,4 +7,4 @@
 [![Used By](https://img.shields.io/sourcegraph/rrc/github.com/jimsmart/peanut.svg)](https://sourcegraph.com/github.com/jimsmart/peanut)
 [![Godoc](https://img.shields.io/badge/godoc-reference-blue.svg)](https://godoc.org/github.com/jimsmart/peanut)
 
-peanut writes data.
+peanut writes data structs without ceremony in a variety of formats.

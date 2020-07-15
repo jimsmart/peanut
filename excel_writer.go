@@ -1,13 +1,37 @@
 package peanut
 
 import (
+	"fmt"
 	"log"
 	"reflect"
 )
 
 var _ Writer = &ExcelWriter{}
 
-// ExcelWriter is a type of peanut.Writer that writes Excel files.
+// ExcelWriter writes records to Excel files, writing
+// each record type to an individual Excel file automatically.
+//
+// Filenames for each corresponding record type are derived
+// accordingly:
+//  prefix + type.Name() + suffix + ".xslx"
+//
+// The first row of resulting Excel file(s) will contain
+// headers using names extracted from the struct's
+// field tags, and will be frozen. Records' fields are
+// written in the order that they appear within the struct.
+//
+// The caller must call Close on successful completion
+// of all writing, to ensure buffers are flushed and
+// files are properly written to disk.
+//
+// In the event of an error or cancellation, the
+// caller must call Cancel before quiting, to ensure
+// closure and cleanup of any partially written files.
+//
+// Note that ExcelWriter currently only handles
+// string and int types —
+// with strings being output as text labels, and
+// ints as numeric values.
 type ExcelWriter struct {
 	*writer
 	prefix      string
@@ -15,7 +39,10 @@ type ExcelWriter struct {
 	excelByType map[reflect.Type]*excelBuilder
 }
 
-// NewExcelWriter returns a new ExcelWriter.
+// NewExcelWriter returns a new ExcelWriter, using prefix
+// and suffix when building its output filenames.
+//
+// See ExcelWriter (above) for output filename details.
 func NewExcelWriter(prefix, suffix string) *ExcelWriter {
 	w := ExcelWriter{
 		writer:      &writer{},
@@ -60,6 +87,9 @@ func convert(list []string) []interface{} {
 }
 
 // Write is called to persist records.
+// Each record is written to an individual row
+// in the corresponding output file, according to the
+// type of the given record.
 func (w *ExcelWriter) Write(x interface{}) error {
 	err := w.initialise(x)
 	if err != nil {
@@ -101,7 +131,14 @@ func (w *ExcelWriter) Cancel() error {
 func excelValuesFrom(x interface{}) []interface{} {
 	var out []interface{}
 	reflectStructValues(x, func(name string, t reflect.Type, v interface{}, tag string) {
-		out = append(out, v)
+		switch t.Kind() {
+		case reflect.String, reflect.Int:
+			out = append(out, v)
+		default:
+			m := fmt.Sprintf("Unknown type: %v", v)
+			panic(m)
+		}
+		// out = append(out, v)
 	})
 	return out
 }

@@ -11,7 +11,29 @@ import (
 
 var _ Writer = &CSVWriter{}
 
-// CSVWriter writes records to CSV files.
+// CSVWriter writes records to CSV files, writing
+// each record type to an individual CSV file automatically.
+//
+// Filenames for each corresponding record type are derived
+// accordingly:
+//  prefix + type.Name() + suffix + ".csv"
+//
+// The first row of resulting CSV file(s) will contain
+// headers using names extracted from the struct's
+// field tags. Records' fields are written in the order
+// that they appear within the struct.
+//
+// The caller must call Close on successful completion
+// of all writing, to ensure buffers are flushed and
+// files are properly written to disk.
+//
+// In the event of an error or cancellation, the
+// caller must call Cancel before quiting, to ensure
+// closure and cleanup of any partially written files.
+//
+// Note that CSVWriter currently only handles
+// string and int types,
+// both of which are output as strings.
 type CSVWriter struct {
 	*writer
 	prefix    string
@@ -19,7 +41,10 @@ type CSVWriter struct {
 	csvByType map[reflect.Type]*csvBuilder
 }
 
-// NewCSVWriter returns a new CSVWriter.
+// NewCSVWriter returns a new CSVWriter, using prefix
+// and suffix when building its output filenames.
+//
+// See CSVWriter (above) for output filename details.
 func NewCSVWriter(prefix, suffix string) *CSVWriter {
 	w := CSVWriter{
 		writer:    &writer{},
@@ -70,6 +95,9 @@ func (w *CSVWriter) initialise(x interface{}) error {
 }
 
 // Write is called to persist records.
+// Each record is written to an individual row
+// in the corresponding output file, according to the
+// type of the given record.
 func (w *CSVWriter) Write(x interface{}) error {
 	err := w.initialise(x)
 	if err != nil {

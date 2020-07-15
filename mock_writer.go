@@ -8,7 +8,8 @@ import (
 
 var _ Writer = &MockWriter{}
 
-// MockWriter is a type of peanut.Writer that captures data, for testing purposes.
+// MockWriter captures written data in memory, to provide easy mocking
+// when testing code that uses peanut.
 type MockWriter struct {
 	*writer
 	Headers            map[string][]string

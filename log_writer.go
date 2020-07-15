@@ -12,7 +12,10 @@ import (
 
 var _ Writer = &LogWriter{}
 
-// LogWriter is a type of peanut.Writer that writes to a log.Logger, on os.Stderr.
+// LogWriter writes records to a log.Logger.
+//
+// If Logger is nil at runtime, a new log.Logger
+// will be created when needed, writing to os.Stderr.
 type LogWriter struct {
 	*writer
 	Logger  *log.Logger
