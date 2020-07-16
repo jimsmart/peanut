@@ -12,7 +12,6 @@ func MultiWriter(writers ...Writer) Writer {
 	return &multiWriter{writers: writers}
 }
 
-// Write is called to persist records.
 func (mw *multiWriter) Write(x interface{}) error {
 	for _, w := range mw.writers {
 		err := w.Write(x)

@@ -75,10 +75,8 @@ func stringValuesAsMap(x interface{}) map[string]string {
 		tag = firstTagValue(tag)
 		switch t.Kind() {
 		case reflect.String:
-			// out = append(out, v.(string))
 			out[tag] = v.(string)
 		case reflect.Int:
-			// out = append(out, strconv.Itoa(v.(int)))
 			out[tag] = strconv.Itoa(v.(int))
 		default:
 			m := fmt.Sprintf("Unknown type: %v", v)

@@ -21,7 +21,7 @@ const tagName = "peanut"
 
 func reflectStructFields(x interface{}, fn func(name string, t reflect.Type, tag string)) {
 
-	// TODO This should work with Ptr and non-Ptr.
+	// TODO(js) This should work with Ptr and non-Ptr.
 
 	// TypeOf returns the reflection Type that represents the dynamic type of variable.
 	// If variable is a nil interface value, TypeOf returns nil.
@@ -47,7 +47,7 @@ func reflectStructFields(x interface{}, fn func(name string, t reflect.Type, tag
 }
 
 func baseType(x interface{}) reflect.Type {
-	// TODO This should work with Ptr and non-Ptr.
+	// TODO(js) This should work with Ptr and non-Ptr.
 	t := reflect.TypeOf(x)
 	if t.Kind() == reflect.Ptr {
 		t = t.Elem()
@@ -57,7 +57,7 @@ func baseType(x interface{}) reflect.Type {
 
 func reflectStructValues(x interface{}, fn func(name string, t reflect.Type, v interface{}, tag string)) {
 
-	// TODO This should work with Ptr and non-Ptr.
+	// TODO(js) This should work with Ptr and non-Ptr.
 
 	t := reflect.ValueOf(x)
 	// TODO This was taken from elsewhere, and modified - but can t.Kind even be a ptr here?

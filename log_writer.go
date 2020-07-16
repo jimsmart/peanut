@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-// TODO This could have a multi-line mode, where each field is logged to its own line.
+// TODO(js) This could have a multi-line mode, where each field is logged to its own line.
 
 var _ Writer = &LogWriter{}
 

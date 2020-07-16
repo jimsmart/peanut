@@ -9,7 +9,7 @@ import (
 
 var _ = Describe("MultiWriter", func() {
 
-	// TODO: Hook up 2x MockWriters.
+	// TODO(js) Hook up 2x MockWriters.
 	// Write data to the multiwriter.
 	// Call all of its methods.
 	// Expect both writers to be equal.
