@@ -86,6 +86,7 @@ func (w *JSONLWriter) register(x interface{}) error {
 	}
 	bw := bufio.NewWriter(file)
 	enc := json.NewEncoder(bw)
+	enc.SetEscapeHTML(false)
 	w.builderByType[t] = &jsonlBuilder{filename: name, file: file, bw: bw, enc: enc}
 	return nil
 }

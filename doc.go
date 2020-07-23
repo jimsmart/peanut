@@ -2,8 +2,8 @@
 // Its primary job is to provide a single consistent interface
 // for easy, ceremony-free persistence of struct data.
 //
-// Currently supported formats are CSV and Excel files. Additional
-// writers are also provided to assist with testing and debugging.
+// Currently supported formats are JSON Lines, CSV and Excel files.
+// Additional writers are also provided to assist with testing and debugging.
 // Mutiple writers can be combined using MultiWriter.
 //
 // All writers have the same basic interface: a Write method,
