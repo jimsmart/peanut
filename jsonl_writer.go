@@ -1,27 +1,29 @@
 package peanut
 
+// JSONLWriter
+// - See https://en.wikipedia.org/wiki/JSON_streaming
+// - To futz about with tags/etc, see https://stackoverflow.com/questions/42546519/how-do-i-dynamically-change-the-structs-json-tag
+
 import (
 	"bufio"
-	"encoding/csv"
+	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"reflect"
 )
 
-var _ Writer = &CSVWriter{}
+// TODO This is based upon CSVWriter. Complete this...
 
-// CSVWriter writes records to CSV files, writing
-// each record type to an individual CSV file automatically.
+var _ Writer = &JSONLWriter{}
+
+// JSONLWriter writes records to JSON Lines files, writing
+// each record type to an individual JSON Lines file automatically.
 //
 // Filenames for each corresponding record type are derived
 // accordingly:
-//  prefix + type.Name() + suffix + ".csv"
-//
-// The first row of resulting CSV file(s) will contain
-// headers using names extracted from the struct's
-// field tags. Records' fields are written in the order
-// that they appear within the struct.
+//  prefix + type.Name() + suffix + ".jsonl"
 //
 // The caller must call Close on successful completion
 // of all writing, to ensure buffers are flushed and
@@ -31,38 +33,38 @@ var _ Writer = &CSVWriter{}
 // caller must call Cancel before quiting, to ensure
 // closure and cleanup of any partially written files.
 //
-// Note that CSVWriter currently only handles
-// string and int types,
-// both of which are output as strings.
-type CSVWriter struct {
+// Note that JSONLWriter currently only handles
+// string and int types:
+// strings are output as strings, and ints as numbers.
+type JSONLWriter struct {
 	*base
-	prefix    string
-	suffix    string
-	csvByType map[reflect.Type]*csvBuilder
+	prefix      string
+	suffix      string
+	jsonlByType map[reflect.Type]*jsonlBuilder
 }
 
-// NewCSVWriter returns a new CSVWriter, using prefix
+// NewJSONLWriter returns a new JSONLWriter, using prefix
 // and suffix when building its output filenames.
 //
-// See CSVWriter (above) for output filename details.
-func NewCSVWriter(prefix, suffix string) *CSVWriter {
-	w := CSVWriter{
-		base:      &base{},
-		prefix:    prefix,
-		suffix:    suffix,
-		csvByType: make(map[reflect.Type]*csvBuilder),
+// See JSONLWriter (above) for output filename details.
+func NewJSONLWriter(prefix, suffix string) *JSONLWriter {
+	w := JSONLWriter{
+		base:        &base{},
+		prefix:      prefix,
+		suffix:      suffix,
+		jsonlByType: make(map[reflect.Type]*jsonlBuilder),
 	}
 	return &w
 }
 
-type csvBuilder struct {
+type jsonlBuilder struct {
 	filename string
 	file     *os.File
 	bw       *bufio.Writer
-	csvw     *csv.Writer
+	enc      *json.Encoder
 }
 
-func (w *CSVWriter) register(x interface{}) error {
+func (w *JSONLWriter) register(x interface{}) error {
 	// Register with base writer.
 	ok := w.base.register(x)
 	if !ok {
@@ -72,9 +74,9 @@ func (w *CSVWriter) register(x interface{}) error {
 	i := len(w.types) - 1
 	t := w.types[i]
 
-	// log.Printf("Setting up csv.Writer for %s", t.Name())
+	// log.Printf("Setting up jsonl.Writer for %s", t.Name())
 
-	name := w.prefix + t.Name() + w.suffix + ".csv"
+	name := w.prefix + t.Name() + w.suffix + ".jsonl"
 	// file, err := os.Create(name)
 	file, err := ioutil.TempFile("", "atomic-")
 	if err != nil {
@@ -82,14 +84,15 @@ func (w *CSVWriter) register(x interface{}) error {
 		return err
 	}
 	bw := bufio.NewWriter(file)
-	cw := csv.NewWriter(bw)
-	w.csvByType[t] = &csvBuilder{filename: name, file: file, bw: bw, csvw: cw}
+	enc := json.NewEncoder(bw)
+	w.jsonlByType[t] = &jsonlBuilder{filename: name, file: file, bw: bw, enc: enc}
 
-	err = cw.Write(w.typeHeaders[i])
-	if err != nil {
-		log.Printf("Error %s", err)
-		return err
-	}
+	// err = cw.Write(w.typeHeaders[i])
+	// if err != nil {
+	// 	log.Printf("Error %s", err)
+	// 	// w.Destroy()
+	// 	return err
+	// }
 	return nil
 }
 
@@ -97,30 +100,57 @@ func (w *CSVWriter) register(x interface{}) error {
 // Each record is written to an individual row
 // in the corresponding output file, according to the
 // type of the given record.
-func (w *CSVWriter) Write(x interface{}) error {
+func (w *JSONLWriter) Write(x interface{}) error {
 	err := w.register(x)
 	if err != nil {
 		return err
 	}
 	t := baseType(x)
 	// log.Printf("WriteRecord for %s", t.Name())
-	cw := w.csvByType[t].csvw
-	return cw.Write(stringValues(x))
+
+	// TODO
+	// panic("unimplemented")
+
+	enc := w.jsonlByType[t].enc
+	return enc.Encode(mapValues(x))
+}
+
+func mapValues(x interface{}) map[string]interface{} {
+	out := make(map[string]interface{})
+	reflectStructValues(x, func(name string, t reflect.Type, v interface{}, tag string) {
+		tag = firstTagValue(tag)
+		switch t.Kind() {
+		case reflect.String:
+			out[tag] = v.(string)
+			// out = append(out, v.(string))
+		case reflect.Int:
+			out[tag] = v.(int)
+			// out = append(out, strconv.Itoa(v.(int)))
+		default:
+			m := fmt.Sprintf("Unknown type: %v", v)
+			panic(m)
+		}
+	})
+	return out
 }
 
 // Close flushes all buffers and writers,
 // and closes the output files.
-func (w *CSVWriter) Close() error {
+func (w *JSONLWriter) Close() error {
+
+	// // TODO
+	// panic("unimplemented")
+
 	var rerr error
-	for _, c := range w.csvByType {
+	for _, c := range w.jsonlByType {
 		var cerr error
 		var err error
-		c.csvw.Flush()
-		err = c.csvw.Error()
-		if err != nil {
-			log.Printf("Error %s", err)
-			cerr = err
-		}
+		// c.csvw.Flush()
+		// err = c.csvw.Error()
+		// if err != nil {
+		// 	log.Printf("Error %s", err)
+		// 	cerr = err
+		// }
 
 		err = c.bw.Flush()
 		if err != nil {
@@ -171,9 +201,13 @@ func (w *CSVWriter) Close() error {
 
 // Cancel should be called in the event of an error occurring,
 // to properly close and delete any partially written files.
-func (w *CSVWriter) Cancel() error {
+func (w *JSONLWriter) Cancel() error {
+
+	// TODO
+	// panic("unimplemented")
+
 	var rerr error
-	for _, c := range w.csvByType {
+	for _, c := range w.jsonlByType {
 		var err error
 
 		err = c.file.Close()
