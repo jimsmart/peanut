@@ -36,9 +36,9 @@ var _ Writer = &CSVWriter{}
 // both of which are output as strings.
 type CSVWriter struct {
 	*base
-	prefix    string
-	suffix    string
-	csvByType map[reflect.Type]*csvBuilder
+	prefix        string
+	suffix        string
+	builderByType map[reflect.Type]*csvBuilder
 }
 
 // NewCSVWriter returns a new CSVWriter, using prefix
@@ -47,10 +47,10 @@ type CSVWriter struct {
 // See CSVWriter (above) for output filename details.
 func NewCSVWriter(prefix, suffix string) *CSVWriter {
 	w := CSVWriter{
-		base:      &base{},
-		prefix:    prefix,
-		suffix:    suffix,
-		csvByType: make(map[reflect.Type]*csvBuilder),
+		base:          &base{},
+		prefix:        prefix,
+		suffix:        suffix,
+		builderByType: make(map[reflect.Type]*csvBuilder),
 	}
 	return &w
 }
@@ -83,7 +83,7 @@ func (w *CSVWriter) register(x interface{}) error {
 	}
 	bw := bufio.NewWriter(file)
 	cw := csv.NewWriter(bw)
-	w.csvByType[t] = &csvBuilder{filename: name, file: file, bw: bw, csvw: cw}
+	w.builderByType[t] = &csvBuilder{filename: name, file: file, bw: bw, csvw: cw}
 
 	err = cw.Write(w.typeHeaders[i])
 	if err != nil {
@@ -104,7 +104,7 @@ func (w *CSVWriter) Write(x interface{}) error {
 	}
 	t := baseType(x)
 	// log.Printf("WriteRecord for %s", t.Name())
-	cw := w.csvByType[t].csvw
+	cw := w.builderByType[t].csvw
 	return cw.Write(stringValues(x))
 }
 
@@ -112,7 +112,7 @@ func (w *CSVWriter) Write(x interface{}) error {
 // and closes the output files.
 func (w *CSVWriter) Close() error {
 	var rerr error
-	for _, c := range w.csvByType {
+	for _, c := range w.builderByType {
 		var cerr error
 		var err error
 		c.csvw.Flush()
@@ -173,7 +173,7 @@ func (w *CSVWriter) Close() error {
 // to properly close and delete any partially written files.
 func (w *CSVWriter) Cancel() error {
 	var rerr error
-	for _, c := range w.csvByType {
+	for _, c := range w.builderByType {
 		var err error
 
 		err = c.file.Close()

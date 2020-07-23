@@ -34,9 +34,9 @@ var _ Writer = &ExcelWriter{}
 // ints as numeric values.
 type ExcelWriter struct {
 	*base
-	prefix      string
-	suffix      string
-	excelByType map[reflect.Type]*excelBuilder
+	prefix        string
+	suffix        string
+	builderByType map[reflect.Type]*excelBuilder
 }
 
 // NewExcelWriter returns a new ExcelWriter, using prefix
@@ -45,10 +45,10 @@ type ExcelWriter struct {
 // See ExcelWriter (above) for output filename details.
 func NewExcelWriter(prefix, suffix string) *ExcelWriter {
 	w := ExcelWriter{
-		base:        &base{},
-		prefix:      prefix,
-		suffix:      suffix,
-		excelByType: make(map[reflect.Type]*excelBuilder),
+		base:          &base{},
+		prefix:        prefix,
+		suffix:        suffix,
+		builderByType: make(map[reflect.Type]*excelBuilder),
 	}
 	return &w
 }
@@ -67,7 +67,7 @@ func (w *ExcelWriter) register(x interface{}) error {
 	if err != nil {
 		return err
 	}
-	w.excelByType[t] = excel
+	w.builderByType[t] = excel
 
 	h := convert(w.typeHeaders[i])
 	err = excel.AddRow(h...)
@@ -96,14 +96,14 @@ func (w *ExcelWriter) Write(x interface{}) error {
 		return err
 	}
 	t := baseType(x)
-	excel := w.excelByType[t]
+	excel := w.builderByType[t]
 	return excel.AddRow(excelValuesFrom(x)...)
 }
 
 // Close the writer, ensuring all files are saved.
 func (w *ExcelWriter) Close() error {
 	var rerr error
-	for _, excel := range w.excelByType {
+	for _, excel := range w.builderByType {
 		err := excel.Save()
 		if err != nil {
 			log.Printf("Error %s", err)

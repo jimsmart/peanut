@@ -1,6 +1,7 @@
 package peanut
 
 // JSONLWriter
+// - See http://jsonlines.org
 // - See https://en.wikipedia.org/wiki/JSON_streaming
 // - To futz about with tags/etc, see https://stackoverflow.com/questions/42546519/how-do-i-dynamically-change-the-structs-json-tag
 
@@ -14,7 +15,7 @@ import (
 	"reflect"
 )
 
-// TODO This is based upon CSVWriter. Complete this...
+// TODO(js) Should this be called JSONLinesWriter?
 
 var _ Writer = &JSONLWriter{}
 
@@ -38,9 +39,9 @@ var _ Writer = &JSONLWriter{}
 // strings are output as strings, and ints as numbers.
 type JSONLWriter struct {
 	*base
-	prefix      string
-	suffix      string
-	jsonlByType map[reflect.Type]*jsonlBuilder
+	prefix        string
+	suffix        string
+	builderByType map[reflect.Type]*jsonlBuilder
 }
 
 // NewJSONLWriter returns a new JSONLWriter, using prefix
@@ -49,10 +50,10 @@ type JSONLWriter struct {
 // See JSONLWriter (above) for output filename details.
 func NewJSONLWriter(prefix, suffix string) *JSONLWriter {
 	w := JSONLWriter{
-		base:        &base{},
-		prefix:      prefix,
-		suffix:      suffix,
-		jsonlByType: make(map[reflect.Type]*jsonlBuilder),
+		base:          &base{},
+		prefix:        prefix,
+		suffix:        suffix,
+		builderByType: make(map[reflect.Type]*jsonlBuilder),
 	}
 	return &w
 }
@@ -85,14 +86,7 @@ func (w *JSONLWriter) register(x interface{}) error {
 	}
 	bw := bufio.NewWriter(file)
 	enc := json.NewEncoder(bw)
-	w.jsonlByType[t] = &jsonlBuilder{filename: name, file: file, bw: bw, enc: enc}
-
-	// err = cw.Write(w.typeHeaders[i])
-	// if err != nil {
-	// 	log.Printf("Error %s", err)
-	// 	// w.Destroy()
-	// 	return err
-	// }
+	w.builderByType[t] = &jsonlBuilder{filename: name, file: file, bw: bw, enc: enc}
 	return nil
 }
 
@@ -107,11 +101,7 @@ func (w *JSONLWriter) Write(x interface{}) error {
 	}
 	t := baseType(x)
 	// log.Printf("WriteRecord for %s", t.Name())
-
-	// TODO
-	// panic("unimplemented")
-
-	enc := w.jsonlByType[t].enc
+	enc := w.builderByType[t].enc
 	return enc.Encode(mapValues(x))
 }
 
@@ -122,10 +112,8 @@ func mapValues(x interface{}) map[string]interface{} {
 		switch t.Kind() {
 		case reflect.String:
 			out[tag] = v.(string)
-			// out = append(out, v.(string))
 		case reflect.Int:
 			out[tag] = v.(int)
-			// out = append(out, strconv.Itoa(v.(int)))
 		default:
 			m := fmt.Sprintf("Unknown type: %v", v)
 			panic(m)
@@ -138,20 +126,10 @@ func mapValues(x interface{}) map[string]interface{} {
 // and closes the output files.
 func (w *JSONLWriter) Close() error {
 
-	// // TODO
-	// panic("unimplemented")
-
 	var rerr error
-	for _, c := range w.jsonlByType {
+	for _, c := range w.builderByType {
 		var cerr error
 		var err error
-		// c.csvw.Flush()
-		// err = c.csvw.Error()
-		// if err != nil {
-		// 	log.Printf("Error %s", err)
-		// 	cerr = err
-		// }
-
 		err = c.bw.Flush()
 		if err != nil {
 			log.Printf("Error %s", err)
@@ -207,7 +185,7 @@ func (w *JSONLWriter) Cancel() error {
 	// panic("unimplemented")
 
 	var rerr error
-	for _, c := range w.jsonlByType {
+	for _, c := range w.builderByType {
 		var err error
 
 		err = c.file.Close()
