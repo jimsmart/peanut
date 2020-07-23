@@ -17,25 +17,25 @@ var _ Writer = &LogWriter{}
 // If Logger is nil at runtime, a new log.Logger
 // will be created when needed, writing to os.Stderr.
 type LogWriter struct {
-	*writer
+	*base
 	Logger  *log.Logger
 	Verbose bool
 }
 
-func (w *LogWriter) initialise(x interface{}) error {
-	if w.writer == nil {
-		w.writer = &writer{}
+func (w *LogWriter) register(x interface{}) error {
+	if w.base == nil {
+		w.base = &base{}
 		if w.Logger == nil {
 			w.Logger = log.New(os.Stderr, "", log.Ldate|log.Ltime)
 		}
 	}
-	w.init(x)
+	w.base.register(x)
 	return nil
 }
 
 // Write is called to persist records.
 func (w *LogWriter) Write(x interface{}) error {
-	err := w.initialise(x)
+	err := w.register(x)
 	if err != nil {
 		return err
 	}

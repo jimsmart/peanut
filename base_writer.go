@@ -4,17 +4,24 @@ import (
 	"reflect"
 )
 
-type writer struct {
+type base struct {
 	records       []interface{}
 	types         []reflect.Type
-	headers       [][]string
+	typeHeaders   [][]string
+	typeTypes     [][]reflect.Type
 	headersByType map[reflect.Type][]string
+	typesByType   map[reflect.Type][]reflect.Type
 }
 
-func (w *writer) init(x interface{}) bool {
+// register a type and collect its metadata.
+// If the type is a newly registered type
+// (has not been seen before),
+// return true. Otherwise return false.
+func (w *base) register(x interface{}) bool {
 	// Lazy init.
 	if w.headersByType == nil {
 		w.headersByType = make(map[reflect.Type][]string)
+		w.typesByType = make(map[reflect.Type][]reflect.Type)
 	}
 
 	t := baseType(x)
@@ -26,17 +33,19 @@ func (w *writer) init(x interface{}) bool {
 
 	w.records = append(w.records, x)
 	w.types = append(w.types, t)
-	h := headers(x)
-	w.headers = append(w.headers, h)
-	w.headersByType[t] = h
-	return true
-}
 
-func headers(x interface{}) []string {
-	var out []string
+	var headers []string
+	var types []reflect.Type
+
 	reflectStructFields(x, func(name string, t reflect.Type, tag string) {
 		tag = firstTagValue(tag)
-		out = append(out, tag)
+		headers = append(headers, tag)
+		types = append(types, t)
 	})
-	return out
+
+	w.typeHeaders = append(w.typeHeaders, headers)
+	w.headersByType[t] = headers
+	w.typeTypes = append(w.typeTypes, types)
+	w.typesByType[t] = types
+	return true
 }

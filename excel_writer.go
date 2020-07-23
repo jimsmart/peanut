@@ -33,7 +33,7 @@ var _ Writer = &ExcelWriter{}
 // with strings being output as text labels, and
 // ints as numeric values.
 type ExcelWriter struct {
-	*writer
+	*base
 	prefix      string
 	suffix      string
 	excelByType map[reflect.Type]*excelBuilder
@@ -45,7 +45,7 @@ type ExcelWriter struct {
 // See ExcelWriter (above) for output filename details.
 func NewExcelWriter(prefix, suffix string) *ExcelWriter {
 	w := ExcelWriter{
-		writer:      &writer{},
+		base:        &base{},
 		prefix:      prefix,
 		suffix:      suffix,
 		excelByType: make(map[reflect.Type]*excelBuilder),
@@ -53,9 +53,9 @@ func NewExcelWriter(prefix, suffix string) *ExcelWriter {
 	return &w
 }
 
-func (w *ExcelWriter) initialise(x interface{}) error {
+func (w *ExcelWriter) register(x interface{}) error {
 	// Register with base writer.
-	ok := w.init(x)
+	ok := w.base.register(x)
 	if !ok {
 		return nil
 	}
@@ -69,7 +69,7 @@ func (w *ExcelWriter) initialise(x interface{}) error {
 	}
 	w.excelByType[t] = excel
 
-	h := convert(w.headers[i])
+	h := convert(w.typeHeaders[i])
 	err = excel.AddRow(h...)
 	if err != nil {
 		log.Printf("Error %s", err)
@@ -91,7 +91,7 @@ func convert(list []string) []interface{} {
 // in the corresponding output file, according to the
 // type of the given record.
 func (w *ExcelWriter) Write(x interface{}) error {
-	err := w.initialise(x)
+	err := w.register(x)
 	if err != nil {
 		return err
 	}

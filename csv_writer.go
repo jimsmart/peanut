@@ -35,7 +35,7 @@ var _ Writer = &CSVWriter{}
 // string and int types,
 // both of which are output as strings.
 type CSVWriter struct {
-	*writer
+	*base
 	prefix    string
 	suffix    string
 	csvByType map[reflect.Type]*csvBuilder
@@ -47,7 +47,7 @@ type CSVWriter struct {
 // See CSVWriter (above) for output filename details.
 func NewCSVWriter(prefix, suffix string) *CSVWriter {
 	w := CSVWriter{
-		writer:    &writer{},
+		base:      &base{},
 		prefix:    prefix,
 		suffix:    suffix,
 		csvByType: make(map[reflect.Type]*csvBuilder),
@@ -62,9 +62,9 @@ type csvBuilder struct {
 	csvw     *csv.Writer
 }
 
-func (w *CSVWriter) initialise(x interface{}) error {
+func (w *CSVWriter) register(x interface{}) error {
 	// Register with base writer.
-	ok := w.init(x)
+	ok := w.base.register(x)
 	if !ok {
 		return nil
 	}
@@ -85,7 +85,7 @@ func (w *CSVWriter) initialise(x interface{}) error {
 	cw := csv.NewWriter(bw)
 	w.csvByType[t] = &csvBuilder{filename: name, file: file, bw: bw, csvw: cw}
 
-	err = cw.Write(w.headers[i])
+	err = cw.Write(w.typeHeaders[i])
 	if err != nil {
 		log.Printf("Error %s", err)
 		// w.Destroy()
@@ -99,7 +99,7 @@ func (w *CSVWriter) initialise(x interface{}) error {
 // in the corresponding output file, according to the
 // type of the given record.
 func (w *CSVWriter) Write(x interface{}) error {
-	err := w.initialise(x)
+	err := w.register(x)
 	if err != nil {
 		return err
 	}
