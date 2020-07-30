@@ -9,6 +9,8 @@ import (
 	"reflect"
 )
 
+// TODO(js) csv.Writer has an internal bufio.Writer, remove our usage of same.
+
 var _ Writer = &CSVWriter{}
 
 // CSVWriter writes records to CSV files, writing
@@ -58,7 +60,7 @@ func NewCSVWriter(prefix, suffix string) *CSVWriter {
 type csvBuilder struct {
 	filename string
 	file     *os.File
-	bw       *bufio.Writer
+	bw       *bufio.Writer // TODO Remove this.
 	csvw     *csv.Writer
 }
 
@@ -81,7 +83,7 @@ func (w *CSVWriter) register(x interface{}) error {
 		log.Printf("Error %s", err)
 		return err
 	}
-	bw := bufio.NewWriter(file)
+	bw := bufio.NewWriter(file) // TODO Remove this.
 	cw := csv.NewWriter(bw)
 	w.builderByType[t] = &csvBuilder{filename: name, file: file, bw: bw, csvw: cw}
 
@@ -122,7 +124,7 @@ func (w *CSVWriter) Close() error {
 			cerr = err
 		}
 
-		err = c.bw.Flush()
+		err = c.bw.Flush() // TODO Remove this.
 		if err != nil {
 			log.Printf("Error %s", err)
 			cerr = err
