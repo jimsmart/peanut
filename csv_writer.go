@@ -1,15 +1,12 @@
 package peanut
 
 import (
-	"bufio"
 	"encoding/csv"
 	"io/ioutil"
 	"log"
 	"os"
 	"reflect"
 )
-
-// TODO(js) csv.Writer has an internal bufio.Writer, remove our usage of same.
 
 var _ Writer = &CSVWriter{}
 
@@ -18,7 +15,9 @@ var _ Writer = &CSVWriter{}
 //
 // Filenames for each corresponding record type are derived
 // accordingly:
-//  prefix + type.Name() + suffix + ".csv"
+//  prefix + type.Name() + suffix + extension
+//
+// Where extension is ".csv" or ".tsv" accordingly.
 //
 // The first row of resulting CSV file(s) will contain
 // headers using names extracted from the struct's
@@ -40,11 +39,14 @@ type CSVWriter struct {
 	*base
 	prefix        string
 	suffix        string
+	extension     string
+	comma         rune
 	builderByType map[reflect.Type]*csvBuilder
 }
 
 // NewCSVWriter returns a new CSVWriter, using prefix
-// and suffix when building its output filenames.
+// and suffix when building its output filenames,
+// and using ".csv" file extension with comma ',' as a field separator.
 //
 // See CSVWriter (above) for output filename details.
 func NewCSVWriter(prefix, suffix string) *CSVWriter {
@@ -52,15 +54,28 @@ func NewCSVWriter(prefix, suffix string) *CSVWriter {
 		base:          &base{},
 		prefix:        prefix,
 		suffix:        suffix,
+		extension:     ".csv",
+		comma:         ',',
 		builderByType: make(map[reflect.Type]*csvBuilder),
 	}
 	return &w
 }
 
+// NewTSVWriter returns a new CSVWriter configured to write
+// TSV files, using prefix and suffix when building its output filenames,
+// and using ".tsv" file extension wutg tab '\t' as a field separator.
+//
+// See CSVWriter (above) for output filename details.
+func NewTSVWriter(prefix, suffix string) *CSVWriter {
+	w := NewCSVWriter(prefix, suffix)
+	w.extension = ".tsv"
+	w.comma = '\t'
+	return w
+}
+
 type csvBuilder struct {
 	filename string
 	file     *os.File
-	bw       *bufio.Writer // TODO Remove this.
 	csvw     *csv.Writer
 }
 
@@ -76,16 +91,16 @@ func (w *CSVWriter) register(x interface{}) error {
 
 	// log.Printf("Setting up csv.Writer for %s", t.Name())
 
-	name := w.prefix + t.Name() + w.suffix + ".csv"
+	name := w.prefix + t.Name() + w.suffix + w.extension
 	// file, err := os.Create(name)
 	file, err := ioutil.TempFile("", "atomic-")
 	if err != nil {
 		log.Printf("Error %s", err)
 		return err
 	}
-	bw := bufio.NewWriter(file) // TODO Remove this.
-	cw := csv.NewWriter(bw)
-	w.builderByType[t] = &csvBuilder{filename: name, file: file, bw: bw, csvw: cw}
+	cw := csv.NewWriter(file)
+	cw.Comma = w.comma
+	w.builderByType[t] = &csvBuilder{filename: name, file: file, csvw: cw}
 
 	err = cw.Write(w.typeHeaders[i])
 	if err != nil {
@@ -119,12 +134,6 @@ func (w *CSVWriter) Close() error {
 		var err error
 		c.csvw.Flush()
 		err = c.csvw.Error()
-		if err != nil {
-			log.Printf("Error %s", err)
-			cerr = err
-		}
-
-		err = c.bw.Flush() // TODO Remove this.
 		if err != nil {
 			log.Printf("Error %s", err)
 			cerr = err
