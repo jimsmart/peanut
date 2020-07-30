@@ -63,7 +63,7 @@ func NewCSVWriter(prefix, suffix string) *CSVWriter {
 
 // NewTSVWriter returns a new CSVWriter configured to write
 // TSV files, using prefix and suffix when building its output filenames,
-// and using ".tsv" file extension wutg tab '\t' as a field separator.
+// and using ".tsv" file extension with tab '\t' as a field separator.
 //
 // See CSVWriter (above) for output filename details.
 func NewTSVWriter(prefix, suffix string) *CSVWriter {
