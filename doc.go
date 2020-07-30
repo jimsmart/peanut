@@ -15,7 +15,7 @@
 // Struct Tagging
 //
 // Structs to be used with peanut must have appropriately tagged
-// fields. e.g.
+// fields, for example:
 //  type ParentRecord struct {
 // 	ParentID string `peanut:"parent_id"`
 // 	Name     string `peanut:"name"`
@@ -76,7 +76,7 @@
 // Limitations
 //
 // Behaviour is undefined for types with the same name
-// but in different packages, e.g. package1.Foo and package2.Foo.
+// but in different packages, such as package1.Foo and package2.Foo.
 //
 // Currently only types string and int are fully supported by all writers.
 package peanut
