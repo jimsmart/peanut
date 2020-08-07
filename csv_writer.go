@@ -79,35 +79,31 @@ type csvBuilder struct {
 	csvw     *csv.Writer
 }
 
-func (w *CSVWriter) register(x interface{}) error {
+func (w *CSVWriter) register(x interface{}) (reflect.Type, error) {
 	// Register with base writer.
-	ok := w.base.register(x)
+	t, ok := w.base.register(x)
 	if !ok {
-		return nil
+		return t, nil
 	}
-
-	i := len(w.types) - 1
-	t := w.types[i]
 
 	// log.Printf("Setting up csv.Writer for %s", t.Name())
 
 	name := w.prefix + t.Name() + w.suffix + w.extension
-	// file, err := os.Create(name)
 	file, err := ioutil.TempFile("", "atomic-")
 	if err != nil {
 		log.Printf("Error %s", err)
-		return err
+		return nil, err
 	}
 	cw := csv.NewWriter(file)
 	cw.Comma = w.comma
 	w.builderByType[t] = &csvBuilder{filename: name, file: file, csvw: cw}
 
-	err = cw.Write(w.typeHeaders[i])
+	err = cw.Write(w.headersByType[t])
 	if err != nil {
 		log.Printf("Error %s", err)
-		return err
+		return nil, err
 	}
-	return nil
+	return t, nil
 }
 
 // Write is called to persist records.
@@ -115,11 +111,10 @@ func (w *CSVWriter) register(x interface{}) error {
 // in the corresponding output file, according to the
 // type of the given record.
 func (w *CSVWriter) Write(x interface{}) error {
-	err := w.register(x)
+	t, err := w.register(x)
 	if err != nil {
 		return err
 	}
-	t := baseType(x)
 	// log.Printf("WriteRecord for %s", t.Name())
 	cw := w.builderByType[t].csvw
 	return cw.Write(stringValues(x))

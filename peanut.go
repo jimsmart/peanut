@@ -35,14 +35,14 @@ func reflectStructFields(x interface{}, fn func(name string, t reflect.Type, tag
 	for i := 0; i < t.NumField(); i++ {
 		// Get the field, returns https://golang.org/pkg/reflect/#StructField
 		field := t.Field(i)
-
-		// Get the field tag value.
 		tag := field.Tag.Get(tagName)
 
-		// TODO Handle missing tag?
+		// Only process fields with appropriate tags.
+		if tag != "" {
+			fn(field.Name, field.Type, tag)
+		}
 
 		// fmt.Printf("%d. %v (%v), tag: '%v'\n", i+1, field.Name, field.Type.Name(), tag)
-		fn(field.Name, field.Type, tag)
 	}
 }
 
@@ -67,17 +67,23 @@ func reflectStructValues(x interface{}, fn func(name string, t reflect.Type, v i
 
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Type().Field(i)
-		name := field.Name
-		// Filter out unexported fields.
-		r, _ := utf8.DecodeRuneInString(name)
-		if !unicode.IsUpper(r) {
-			continue
-		}
-		val := t.Field(i).Interface()
 		tag := field.Tag.Get(tagName)
 
+		// Only process fields with appropriate tags.
+		if tag != "" {
+
+			name := field.Name
+			// Filter out unexported fields.
+			r, _ := utf8.DecodeRuneInString(name)
+			if !unicode.IsUpper(r) {
+				continue
+			}
+			val := t.Field(i).Interface()
+
+			fn(name, field.Type, val, tag)
+		}
+
 		// fmt.Printf("Field Name: %s,\t Field Value: %v,\t Tag Value: %s\n", field.Name, val, tag)
-		fn(name, field.Type, val, tag)
 	}
 }
 

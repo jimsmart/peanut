@@ -1,8 +1,8 @@
 // Package peanut writes data structs in a variety of formats.
-// Its primary job is to provide a single consistent interface
+// Its primary purpose is to provide a single consistent interface
 // for easy, ceremony-free persistence of struct data.
 //
-// Currently supported formats are JSON Lines, CSV/TSV and Excel files.
+// Currently supported formats are SQLite, JSON Lines, CSV/TSV and Excel.
 // Additional writers are also provided to assist with testing and debugging.
 // Mutiple writers can be combined using MultiWriter.
 //

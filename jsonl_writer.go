@@ -65,15 +65,12 @@ type jsonlBuilder struct {
 	enc      *json.Encoder
 }
 
-func (w *JSONLWriter) register(x interface{}) error {
+func (w *JSONLWriter) register(x interface{}) (reflect.Type, error) {
 	// Register with base writer.
-	ok := w.base.register(x)
+	t, ok := w.base.register(x)
 	if !ok {
-		return nil
+		return t, nil
 	}
-
-	i := len(w.types) - 1
-	t := w.types[i]
 
 	// log.Printf("Setting up jsonl.Writer for %s", t.Name())
 
@@ -82,13 +79,13 @@ func (w *JSONLWriter) register(x interface{}) error {
 	file, err := ioutil.TempFile("", "atomic-")
 	if err != nil {
 		log.Printf("Error %s", err)
-		return err
+		return nil, err
 	}
 	bw := bufio.NewWriter(file)
 	enc := json.NewEncoder(bw)
 	enc.SetEscapeHTML(false)
 	w.builderByType[t] = &jsonlBuilder{filename: name, file: file, bw: bw, enc: enc}
-	return nil
+	return t, nil
 }
 
 // Write is called to persist records.
@@ -96,11 +93,10 @@ func (w *JSONLWriter) register(x interface{}) error {
 // in the corresponding output file, according to the
 // type of the given record.
 func (w *JSONLWriter) Write(x interface{}) error {
-	err := w.register(x)
+	t, err := w.register(x)
 	if err != nil {
 		return err
 	}
-	t := baseType(x)
 	// log.Printf("WriteRecord for %s", t.Name())
 	enc := w.builderByType[t].enc
 	return enc.Encode(mapValues(x))

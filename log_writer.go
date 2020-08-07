@@ -22,24 +22,23 @@ type LogWriter struct {
 	Verbose bool
 }
 
-func (w *LogWriter) register(x interface{}) error {
+func (w *LogWriter) register(x interface{}) (reflect.Type, error) {
 	if w.base == nil {
 		w.base = &base{}
 		if w.Logger == nil {
 			w.Logger = log.New(os.Stderr, "", log.Ldate|log.Ltime)
 		}
 	}
-	w.base.register(x)
-	return nil
+	t, _ := w.base.register(x)
+	return t, nil
 }
 
 // Write is called to persist records.
 func (w *LogWriter) Write(x interface{}) error {
-	err := w.register(x)
+	t, err := w.register(x)
 	if err != nil {
 		return err
 	}
-	t := baseType(x)
 	// Build log message.
 	n := t.Name()
 	m := fmt.Sprintf("<%s>", n)
@@ -82,7 +81,7 @@ func stringValues(x interface{}) []string {
 		case reflect.Int:
 			out = append(out, strconv.Itoa(v.(int)))
 		default:
-			m := fmt.Sprintf("Unknown type: %v", v)
+			m := fmt.Sprintf("Unknown type: %v", v) // TODO(js) This would be clearer if it used t.Name() ?
 			panic(m)
 		}
 	})

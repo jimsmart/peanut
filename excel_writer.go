@@ -53,29 +53,26 @@ func NewExcelWriter(prefix, suffix string) *ExcelWriter {
 	return &w
 }
 
-func (w *ExcelWriter) register(x interface{}) error {
+func (w *ExcelWriter) register(x interface{}) (reflect.Type, error) {
 	// Register with base writer.
-	ok := w.base.register(x)
+	t, ok := w.base.register(x)
 	if !ok {
-		return nil
+		return t, nil
 	}
-
-	i := len(w.types) - 1
-	t := w.types[i]
 
 	excel, err := newExcelBuilder(w.prefix + t.Name() + w.suffix + ".xlsx")
 	if err != nil {
-		return err
+		return nil, err
 	}
 	w.builderByType[t] = excel
 
-	h := convert(w.typeHeaders[i])
+	h := convert(w.headersByType[t])
 	err = excel.AddRow(h...)
 	if err != nil {
 		log.Printf("Error %s", err)
-		return err
+		return nil, err
 	}
-	return nil
+	return t, nil
 }
 
 func convert(list []string) []interface{} {
@@ -91,11 +88,10 @@ func convert(list []string) []interface{} {
 // in the corresponding output file, according to the
 // type of the given record.
 func (w *ExcelWriter) Write(x interface{}) error {
-	err := w.register(x)
+	t, err := w.register(x)
 	if err != nil {
 		return err
 	}
-	t := baseType(x)
 	excel := w.builderByType[t]
 	return excel.AddRow(excelValuesFrom(x)...)
 }
@@ -129,6 +125,7 @@ func (w *ExcelWriter) Cancel() error {
 // }
 
 func excelValuesFrom(x interface{}) []interface{} {
+	// TODO This is badly named, it's not just used by ExcelWriter.
 	var out []interface{}
 	reflectStructValues(x, func(name string, t reflect.Type, v interface{}, tag string) {
 		switch t.Kind() {

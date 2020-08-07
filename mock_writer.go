@@ -20,7 +20,7 @@ type MockWriter struct {
 	CalledCancel       int
 }
 
-func (w *MockWriter) register(x interface{}) error {
+func (w *MockWriter) register(x interface{}) (reflect.Type, error) {
 	// Lazy init.
 	if w.base == nil {
 		w.base = &base{}
@@ -28,23 +28,21 @@ func (w *MockWriter) register(x interface{}) error {
 		w.Data = make(map[string][]map[string]string)
 	}
 	// Register with base writer.
-	ok := w.base.register(x)
+	t, ok := w.base.register(x)
 	if !ok {
-		return nil
+		return t, nil
 	}
-	i := len(w.types) - 1
-	w.Headers[w.types[i].Name()] = w.typeHeaders[i]
-	return nil
+	w.Headers[t.Name()] = w.headersByType[t]
+	return t, nil
 }
 
 // Write is called to persist records.
 func (w *MockWriter) Write(x interface{}) error {
 	w.CalledWrite++
-	err := w.register(x)
+	t, err := w.register(x)
 	if err != nil {
 		return err
 	}
-	t := baseType(x)
 
 	n := t.Name()
 	if w.DisableDataCapture != nil && w.DisableDataCapture[n] {
