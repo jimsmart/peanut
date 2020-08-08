@@ -12,26 +12,22 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+// TODO Add an option to allow different insert modes (default/ignore/update).
+
 type SQLiteWriter struct {
 	*base
-	tmpFilename string
-	dstFilename string
-	// suffix        string
-	// builderByType map[reflect.Type]*csvBuilder
-	insertByType map[reflect.Type]*sql.Stmt
-	db           *sql.DB
+	tmpFilename  string                     // tmpFilename is the filename used by the temp file.
+	dstFilename  string                     // dstFilename is the final destination filename.
+	insertByType map[reflect.Type]*sql.Stmt // insertByType holds prepared INSERT statements.
+	db           *sql.DB                    // db is the database instance.
 }
 
-// TODO Can we unify/simplify the constructors? Use pattern instead of prefix/suffix maybe?
+// TODO Can we unify/simplify the constructors? Use pattern instead of prefix/suffix maybe? (not here, but for others)
 
-// TODO Prefix should likely just be filename here?
-
-func NewSQLiteWriter(prefix string) *SQLiteWriter {
+func NewSQLiteWriter(filename string) *SQLiteWriter {
 	w := SQLiteWriter{
-		base:        &base{},
-		dstFilename: prefix + ".sqlite",
-		// suffix:        suffix,
-		// builderByType: make(map[reflect.Type]*csvBuilder),
+		base:         &base{},
+		dstFilename:  filename + ".sqlite",
 		insertByType: make(map[reflect.Type]*sql.Stmt),
 	}
 	return &w
@@ -52,7 +48,7 @@ func (w *SQLiteWriter) register(x interface{}) (reflect.Type, error) {
 			return nil, err
 		}
 
-		log.Printf("Creating SQLite db %s", filename)
+		// log.Printf("Creating SQLite db %s", filename)
 		db, err := sql.Open("sqlite3", filename)
 		if err != nil {
 			return nil, err
@@ -61,11 +57,10 @@ func (w *SQLiteWriter) register(x interface{}) (reflect.Type, error) {
 		w.tmpFilename = filename
 	}
 
-	log.Printf("Setting up SQLite table for %s", t.Name())
+	// log.Printf("Setting up SQLite table for %s", t.Name())
 
 	ddl := w.createDDL(t)
-
-	log.Println("DDL:", ddl)
+	// log.Println("DDL:", ddl)
 
 	// Execute DDL to create table.
 	_, err := w.db.Exec(ddl)
@@ -74,8 +69,9 @@ func (w *SQLiteWriter) register(x interface{}) (reflect.Type, error) {
 	}
 
 	insert := w.createInsert(t)
+	// log.Println("Insert:", insert)
 
-	log.Println("Insert:", insert)
+	// Create and cache prepared statement.
 	stmt, err := w.db.Prepare(insert)
 	if err != nil {
 		return nil, err
@@ -86,16 +82,24 @@ func (w *SQLiteWriter) register(x interface{}) (reflect.Type, error) {
 }
 
 func (w *SQLiteWriter) createDDL(t reflect.Type) string {
+
+	// Create table using type name.
 	ddl := "CREATE TABLE " + t.Name() + " (\n"
 
+	// List of DDL statements to build the table definition.
 	var ddlLines []string
+	// List of primary keys.
 	var pks []string
 
 	hdrs := w.headersByType[t]
 	typs := w.typesByType[t]
 	tags := w.tagsByType[t]
+
 	for i := 0; i < len(typs); i++ {
+		// Column name.
 		col := "\t" + hdrs[i] + " "
+
+		// Column datatype.
 		switch typs[i].Kind() {
 		case reflect.String:
 			col += "TEXT"
@@ -106,15 +110,20 @@ func (w *SQLiteWriter) createDDL(t reflect.Type) string {
 			panic(m)
 		}
 
+		// Column constraints.
 		col += " NOT NULL"
 
+		// Add DDL line to list.
 		ddlLines = append(ddlLines, col)
 
+		// Handle primary key tag.
 		if secondTagValue(tags[i]) == "pk" {
+			// Add column name to primary key list.
 			pks = append(pks, hdrs[i])
 		}
 	}
 
+	// Primary key.
 	if len(pks) > 0 {
 		pk := "PRIMARY KEY ("
 		pk += strings.Join(pks, ", ")
@@ -122,6 +131,7 @@ func (w *SQLiteWriter) createDDL(t reflect.Type) string {
 		ddlLines = append(ddlLines, pk)
 	}
 
+	// Join the lines of DDL together.
 	ddl += strings.Join(ddlLines, ",\n")
 
 	ddl += "\n)"
@@ -134,14 +144,11 @@ func (w *SQLiteWriter) createInsert(t reflect.Type) string {
 	hdrs := w.headersByType[t]
 	s += strings.Join(hdrs, ",")
 	s += ") VALUES ("
-	first := true
-	for i := 0; i < len(hdrs); i++ {
-		if !first {
-			s += ","
-		}
-		first = false
-		s += "?"
+	q := make([]string, len(hdrs))
+	for i := 0; i < len(q); i++ {
+		q[i] = "?"
 	}
+	s += strings.Join(q, ",")
 	s += ")"
 	return s
 }
@@ -202,56 +209,6 @@ func (w *SQLiteWriter) close() error {
 		rerr = err
 	}
 
-	//
-
-	// for _, c := range w.builderByType {
-	// 	var cerr error
-	// 	var err error
-	// 	c.csvw.Flush()
-	// 	err = c.csvw.Error()
-	// 	if err != nil {
-	// 		log.Printf("Error %s", err)
-	// 		cerr = err
-	// 	}
-
-	// 	// Chmod the file world-readable (ioutil.TempFile creates files with
-	// 	// mode 0600) before renaming.
-	// 	err = c.file.Chmod(0644)
-	// 	if err != nil {
-	// 		log.Printf("Error %s", err)
-	// 		cerr = err
-	// 	}
-
-	// 	// fsync(2) after fchmod(2) orders writes as per
-	// 	// https://lwn.net/Articles/270891/. Can be skipped for performance
-	// 	// for idempotent applications (which only ever atomically write new
-	// 	// files and tolerate file loss) on an ordered file systems. ext3,
-	// 	// ext4, XFS, Btrfs, ZFS are ordered by default.
-	// 	c.file.Sync()
-
-	// 	err = c.file.Close()
-	// 	if err != nil {
-	// 		log.Printf("Error %s", err)
-	// 		cerr = err
-	// 	}
-
-	// 	if cerr != nil {
-	// 		rerr = cerr
-	// 		// // Best effort cleanup.
-	// 		// os.Remove(c.file.Name())
-	// 		continue
-	// 	}
-
-	// 	err = os.Rename(c.file.Name(), c.filename)
-	// 	if err != nil {
-	// 		log.Printf("Error %s", err)
-	// 		cerr = err
-	// 	}
-
-	// 	if cerr != nil {
-	// 		rerr = cerr
-	// 	}
-	// }
 	return rerr
 }
 
@@ -268,22 +225,5 @@ func (w *SQLiteWriter) Cancel() error {
 		rerr = err
 	}
 
-	//
-
-	// for _, c := range w.builderByType {
-	// 	var err error
-
-	// 	err = c.file.Close()
-	// 	if err != nil {
-	// 		log.Printf("Error %s", err)
-	// 		rerr = err
-	// 	}
-
-	// 	err = os.Remove(c.file.Name())
-	// 	if err != nil {
-	// 		log.Printf("Error %s", err)
-	// 		rerr = err
-	// 	}
-	// }
 	return rerr
 }
