@@ -1,6 +1,11 @@
 TODO
 ====
 
+- Document pk stuff.
+
+- Write thorough tests for each non-trivial writer.
+
+
 - Writers currently process all fields. We should ignore those without appropriate tags.
 
 
@@ -16,15 +21,14 @@ TODO
 
 - Switch existing reflect stuff in Write to use a reflect walker.
  - Actually, I think this is overkill, we process flat structs.
+ - On second thoughts, it may simplify some of our code.
 
 
 
 New writer types
 ----------------
 
-SQLiteWriter
-- TODO
-
+?
 
 
 
@@ -47,4 +51,4 @@ JSONStreamWriter - Done, see JSONLWriter.
 - Arguably, the metadata stuff doesn't belong in this package? - seperation of concerns, and that.
  - Done: See package scrutiny.
 
-
+SQLiteWriter - Done
