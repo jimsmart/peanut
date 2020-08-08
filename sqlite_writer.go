@@ -12,8 +12,36 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// TODO Add an option to allow different insert modes (default/ignore/update).
+// TODO(js) Add an option to allow different insert modes (default/ignore/update).
 
+// TODO(js) We should not be silently overwriting things. We should return an error somehow.
+
+// TODO(js) Document primary key creation / accompanying ",pk" tag notation.
+
+// SQLiteWriter writes records to an SQLite database,
+// writing each record type to an individual table
+// automatically.
+//
+// During writing, the database file is held in a
+// temporary location, and only moved into its
+// final destination during a successful Close operation.
+//
+// Note that if an existing database with the same filename
+// already exists at the given output location,
+// it will be silently overwritten.
+//
+// The caller must call Close on successful completion
+// of all writing, to ensure proper cleanup, and the
+// relocation of the database from its temporary
+// location during writing, to its final output.
+//
+// In the event of an error or cancellation, the
+// caller must call Cancel before quiting, to ensure
+// closure and cleanup of any partially written data.
+//
+// Note that SQLiteWriter currently only handles
+// string and int types:
+// strings are output as TEXT, and ints as INTEGER.
 type SQLiteWriter struct {
 	*base
 	tmpFilename  string                     // tmpFilename is the filename used by the temp file.
@@ -24,6 +52,8 @@ type SQLiteWriter struct {
 
 // TODO Can we unify/simplify the constructors? Use pattern instead of prefix/suffix maybe? (not here, but for others)
 
+// NewSQLiteWriter returns a new SQLiteWriter,
+// using the given filename + ".sqlite" as its final output location.
 func NewSQLiteWriter(filename string) *SQLiteWriter {
 	w := SQLiteWriter{
 		base:         &base{},
@@ -153,6 +183,10 @@ func (w *SQLiteWriter) createInsert(t reflect.Type) string {
 	return s
 }
 
+// Write is called to persist records.
+// Each record is written to an individual row
+// in the corresponding table within the output database,
+// according to the type of the given record.
 func (w *SQLiteWriter) Write(x interface{}) error {
 	t, err := w.register(x)
 	if err != nil {
@@ -165,10 +199,13 @@ func (w *SQLiteWriter) Write(x interface{}) error {
 	return err
 }
 
+// Close cleans up all used resources,
+// closes the database connection,
+// and moves the database to its final location.
 func (w *SQLiteWriter) Close() error {
 	var rerr error
 
-	// TODO
+	// TODO(js) We should make lists of errors.
 
 	err := w.close()
 	if err != nil {
@@ -187,7 +224,7 @@ func (w *SQLiteWriter) Close() error {
 func (w *SQLiteWriter) close() error {
 	var rerr error
 
-	// TODO
+	// TODO(js) We should make lists of errors.
 
 	for _, stmt := range w.insertByType {
 		var cerr error
@@ -212,10 +249,13 @@ func (w *SQLiteWriter) close() error {
 	return rerr
 }
 
+// Cancel should be called in the event of an error occurring,
+// to properly close any used resources,
+// and delete the partially written database from its temporary location.
 func (w *SQLiteWriter) Cancel() error {
 	var rerr error
 
-	// TODO
+	// TODO(js) We should make lists of errors.
 
 	rerr = w.close()
 
