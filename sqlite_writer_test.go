@@ -9,7 +9,7 @@ import (
 
 var _ = Describe("SQLiteWriter", func() {
 
-	It("should write the correct data when structs are written", func() {
+	XIt("should write the correct data when structs are written", func() {
 
 		type Foo struct {
 			StringField string `peanut:"test_string1,pk"`
