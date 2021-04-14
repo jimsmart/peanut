@@ -15,8 +15,9 @@ var _ = Describe("LogWriter", func() {
 	It("should write the correct text when structs are written", func() {
 
 		type Foo struct {
-			StringField string `peanut:"test_string1"`
-			IntField    int    `peanut:"test_int1"`
+			StringField  string `peanut:"test_string1"`
+			IntField     int    `peanut:"test_int1"`
+			IgnoredField int
 		}
 
 		testOutput := []*Foo{

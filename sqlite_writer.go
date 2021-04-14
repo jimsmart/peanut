@@ -16,8 +16,6 @@ import (
 
 // TODO(js) We should not be silently overwriting things. We should return an error somehow.
 
-// TODO(js) Document primary key creation / accompanying ",pk" tag notation.
-
 // SQLiteWriter writes records to an SQLite database,
 // writing each record type to an individual table
 // automatically.
@@ -42,6 +40,20 @@ import (
 // Note that SQLiteWriter currently only handles
 // string and int types:
 // strings are output as TEXT, and ints as INTEGER.
+//
+// SQLiteWriter supports additional tag values to denote the primary key:
+//  type ParentRecord struct {
+//  	ParentID string `peanut:"parent_id,pk"`
+//  	Name     string `peanut:"name"`
+//  	Counter  int    `peanut:"counter"`
+//  }
+//
+//  type ChildRecord struct {
+//  	ChildID  string `peanut:"child_id,pk"`
+//  	Name     string `peanut:"name"`
+//  	ParentID string `peanut:"parent_id"`
+//  }
+// Compound primary keys are also supported.
 type SQLiteWriter struct {
 	*base
 	tmpFilename  string                     // tmpFilename is the filename used by the temp file.
@@ -50,7 +62,7 @@ type SQLiteWriter struct {
 	db           *sql.DB                    // db is the database instance.
 }
 
-// TODO Can we unify/simplify the constructors? Use pattern instead of prefix/suffix maybe? (not here, but for others)
+// TODO(js) Can we unify/simplify the constructors? Use pattern instead of prefix/suffix maybe? (not here, but for others)
 
 // NewSQLiteWriter returns a new SQLiteWriter,
 // using the given filename + ".sqlite" as its final output location.

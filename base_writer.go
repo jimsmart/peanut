@@ -5,16 +5,10 @@ import (
 )
 
 type base struct {
-	records       []interface{}                   // records is a list of an instance of each struct type.
-	types         []reflect.Type                  // types is a list of reflected types for each struct type.
 	headersByType map[reflect.Type][]string       // headersByType is a list of headers for each struct type.
 	typesByType   map[reflect.Type][]reflect.Type // typesByType is a list of reflected field types for each struct type.
 	tagsByType    map[reflect.Type][]string       // tagsByType is a list of field tags for each struct type.
 }
-
-// TODO(js) We have some redundancy. We can likely get rid of most/all of the lists in base?
-
-// TODO What is records really used for? Logging? Metadata?
 
 // register a type and collect its metadata.
 // If the type is a newly registered type
@@ -34,9 +28,6 @@ func (w *base) register(x interface{}) (reflect.Type, bool) {
 		// Yes.
 		return t, false
 	}
-
-	w.records = append(w.records, x)
-	w.types = append(w.types, t)
 
 	var headers []string
 	var types []reflect.Type

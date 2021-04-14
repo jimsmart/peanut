@@ -1,7 +1,9 @@
 package peanut
 
 import (
+	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -9,7 +11,6 @@ import (
 
 // Writer defines a record-based writer.
 type Writer interface {
-	// Write is called to persist records.
 	Write(r interface{}) error
 	Close() error
 	Cancel() error
@@ -18,6 +19,39 @@ type Writer interface {
 //
 
 const tagName = "peanut"
+
+func stringValues(x interface{}) []string {
+	var out []string
+	reflectStructValues(x, func(name string, t reflect.Type, v interface{}, tag string) {
+		switch t.Kind() {
+		case reflect.String:
+			out = append(out, v.(string))
+		case reflect.Int:
+			out = append(out, strconv.Itoa(v.(int)))
+		default:
+			m := fmt.Sprintf("Unknown type: %v", v) // TODO(js) This would be clearer if it used t.Name() ?
+			panic(m)
+		}
+	})
+	return out
+}
+
+func mapValues(x interface{}) map[string]interface{} {
+	out := make(map[string]interface{})
+	reflectStructValues(x, func(name string, t reflect.Type, v interface{}, tag string) {
+		tag = firstTagValue(tag)
+		switch t.Kind() {
+		case reflect.String:
+			out[tag] = v.(string)
+		case reflect.Int:
+			out[tag] = v.(int)
+		default:
+			m := fmt.Sprintf("Unknown type: %v", v)
+			panic(m)
+		}
+	})
+	return out
+}
 
 func reflectStructFields(x interface{}, fn func(name string, t reflect.Type, tag string)) {
 

@@ -1,6 +1,3 @@
-// Copyright 2010 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
 package peanut
 
 import (
@@ -13,6 +10,10 @@ import (
 )
 
 // This is copied from https://golang.org/src/io/ioutil/tempfile.go
+
+// Copyright 2010 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 // Random number state.
 // We generate random temporary file names so that there's a good

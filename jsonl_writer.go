@@ -8,14 +8,11 @@ package peanut
 import (
 	"bufio"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"reflect"
 )
-
-// TODO(js) Should this be called JSONLinesWriter?
 
 var _ Writer = &JSONLWriter{}
 
@@ -100,23 +97,6 @@ func (w *JSONLWriter) Write(x interface{}) error {
 	// log.Printf("WriteRecord for %s", t.Name())
 	enc := w.builderByType[t].enc
 	return enc.Encode(mapValues(x))
-}
-
-func mapValues(x interface{}) map[string]interface{} {
-	out := make(map[string]interface{})
-	reflectStructValues(x, func(name string, t reflect.Type, v interface{}, tag string) {
-		tag = firstTagValue(tag)
-		switch t.Kind() {
-		case reflect.String:
-			out[tag] = v.(string)
-		case reflect.Int:
-			out[tag] = v.(int)
-		default:
-			m := fmt.Sprintf("Unknown type: %v", v)
-			panic(m)
-		}
-	})
-	return out
 }
 
 // Close flushes all buffers and writers,

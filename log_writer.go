@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"reflect"
-	"strconv"
 )
 
 // TODO(js) This could have a multi-line mode, where each field is logged to its own line.
@@ -70,20 +69,4 @@ func (w *LogWriter) Cancel() error {
 		w.Logger.Println("Called LogWriter.Cancel")
 	}
 	return nil
-}
-
-func stringValues(x interface{}) []string {
-	var out []string
-	reflectStructValues(x, func(name string, t reflect.Type, v interface{}, tag string) {
-		switch t.Kind() {
-		case reflect.String:
-			out = append(out, v.(string))
-		case reflect.Int:
-			out = append(out, strconv.Itoa(v.(int)))
-		default:
-			m := fmt.Sprintf("Unknown type: %v", v) // TODO(js) This would be clearer if it used t.Name() ?
-			panic(m)
-		}
-	})
-	return out
 }

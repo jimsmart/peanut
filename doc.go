@@ -2,7 +2,10 @@
 // Its primary purpose is to provide a single consistent interface
 // for easy, ceremony-free persistence of struct data.
 //
-// Currently supported formats are SQLite, JSON Lines, CSV/TSV and Excel.
+// Each distinct struct type sent to Write() is written to an individual file/table,
+// each named according to the name of the struct.
+//
+// Currently supported formats are SQLite, JSON Lines (JSONL), CSV/TSV, and Excel.
 // Additional writers are also provided to assist with testing and debugging.
 // Mutiple writers can be combined using MultiWriter.
 //
@@ -60,9 +63,15 @@
 //
 // When successfully completed:
 //  err = w.Close()
+//  // Handle error...
 //
-// Or, to abort the whole operation in the event of an error or cancellation:
+//  // Output files will be:
+//  // - /some/path/my-data-ParentRecord.csv
+//  // - /some/path/my-data-ChildRecord.csv
+//
+// Or, to abort the whole operation in the event of an error or cancellation while writing records:
 //  err = w.Cancel()
+//  // Handle error...
 //
 // MultiWriter
 //
