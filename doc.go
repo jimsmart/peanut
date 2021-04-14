@@ -20,16 +20,18 @@
 // Structs to be used with peanut must have appropriately tagged
 // fields, for example:
 //  type ParentRecord struct {
-// 	ParentID string `peanut:"parent_id"`
-// 	Name     string `peanut:"name"`
-// 	Counter  int    `peanut:"counter"`
+//  	ParentID string `peanut:"parent_id"`
+//  	Name     string `peanut:"name"`
+//  	Counter  int    `peanut:"counter"`
 //  }
 //
 //  type ChildRecord struct {
-// 	ChildID  string `peanut:"child_id"`
-// 	Name     string `peanut:"name"`
-// 	ParentID string `peanut:"parent_id"`
+//  	ChildID  string `peanut:"child_id"`
+//  	Name     string `peanut:"name"`
+//  	ParentID string `peanut:"parent_id"`
 //  }
+//
+// All writers use the same tags.
 //
 // Usage
 //
@@ -66,8 +68,8 @@
 //  // Handle error...
 //
 //  // Output files will be:
-//  // - /some/path/my-data-ParentRecord.csv
-//  // - /some/path/my-data-ChildRecord.csv
+//  // /some/path/my-data-ParentRecord.csv
+//  // /some/path/my-data-ChildRecord.csv
 //
 // Or, to abort the whole operation in the event of an error or cancellation while writing records:
 //  err = w.Cancel()

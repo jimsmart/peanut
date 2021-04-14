@@ -8,3 +8,49 @@
 [![Godoc](https://img.shields.io/badge/godoc-reference-blue.svg)](https://godoc.org/github.com/jimsmart/peanut)
 
 peanut writes data structs without ceremony in a variety of formats.
+
+## About
+
+TODO
+
+## Quickstart
+
+### Installation
+
+Get the package:
+
+```bash
+go get github.com/jimsmart/peanut
+```
+
+Use the package within your code (see examples below):
+
+```go
+import "github.com/jimsmart/peanut"
+```
+
+### Example Code
+
+See GoDocs.
+
+## Documentation
+
+GoDocs [https://godoc.org/github.com/jimsmart/peanut](https://godoc.org/github.com/jimsmart/peanut)
+
+## Testing
+
+To run the tests execute `go test` inside the project folder.
+
+For a full coverage report, try:
+
+```bash
+go test -coverprofile=coverage.out && go tool cover -html=coverage.out
+```
+
+## License
+
+Package peanut is copyright 2020-2021 by Jim Smart and released under the [BSD 3-Clause License](LICENSE.md).
+
+## History
+
+- v0.0.0: Placeholder.

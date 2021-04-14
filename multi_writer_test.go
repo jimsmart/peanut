@@ -9,17 +9,7 @@ import (
 
 var _ = Describe("MultiWriter", func() {
 
-	// TODO(js) Hook up 2x MockWriters.
-	// Write data to the multiwriter.
-	// Call all of its methods.
-	// Expect both writers to be equal.
-
 	It("should call the methods of the writers it wraps", func() {
-
-		type Foo struct {
-			StringField string `peanut:"test_string1"`
-			IntField    int    `peanut:"test_int1"`
-		}
 
 		testOutput := []*Foo{
 			{StringField: "test 1", IntField: 1},

@@ -14,21 +14,9 @@ var _ = Describe("LogWriter", func() {
 
 	It("should write the correct text when structs are written", func() {
 
-		type Foo struct {
-			StringField  string `peanut:"test_string1"`
-			IntField     int    `peanut:"test_int1"`
-			IgnoredField int
-		}
-
-		testOutput := []*Foo{
-			{StringField: "test 1", IntField: 1},
-			{StringField: "test 2", IntField: 2},
-			{StringField: "test 3", IntField: 3},
-		}
-
-		expectedOutput := "<Foo> test_string1: test 1 test_int1: 1\n" +
-			"<Foo> test_string1: test 2 test_int1: 2\n" +
-			"<Foo> test_string1: test 3 test_int1: 3\n" +
+		expectedOutput := "<Foo> foo_string1: test 1 foo_int1: 1\n" +
+			"<Foo> foo_string1: test 2 foo_int1: 2\n" +
+			"<Foo> foo_string1: test 3 foo_int1: 3\n" +
 			"Called LogWriter.Close\n" +
 			"Called LogWriter.Cancel\n"
 
@@ -41,8 +29,8 @@ var _ = Describe("LogWriter", func() {
 			Verbose: true,
 		}
 
-		for i := range testOutput {
-			err = w.Write(testOutput[i])
+		for i := range testOutputFoo {
+			err = w.Write(testOutputFoo[i])
 			Expect(err).To(BeNil())
 		}
 		err = w.Close()
