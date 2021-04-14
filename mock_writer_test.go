@@ -1,7 +1,7 @@
 package peanut_test
 
 import (
-	"github.com/jimsmart/elektra/scraper/peanut"
+	"github.com/jimsmart/peanut"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -9,27 +9,6 @@ import (
 var _ = Describe("MockWriter", func() {
 
 	It("should capture the correct headers and data when structs are written", func() {
-
-		// type Foo struct {
-		// 	StringField string `peanut:"test_string1,pk"`
-		// 	IntField    int    `peanut:"test_int1"`
-		// }
-
-		// type Bar struct {
-		// 	IntField    int    `peanut:"test_int2"`
-		// 	StringField string `peanut:"test_string2"`
-		// }
-
-		// testOutput1 := []*Foo{
-		// 	{StringField: "test 1", IntField: 1},
-		// 	{StringField: "test 2", IntField: 2},
-		// 	{StringField: "test 3", IntField: 3},
-		// }
-
-		// testOutput2 := []*Bar{
-		// 	{IntField: 1, StringField: "test 1"},
-		// 	{IntField: 2, StringField: "test 2"},
-		// }
 
 		expectedHeaders := map[string][]string{
 			"Foo": {"foo_string1", "foo_int1"},

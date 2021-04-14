@@ -22,3 +22,7 @@ var testOutputBar = []*Bar{
 	{IntField: 2, StringField: "test 2"},
 	{IntField: 3, StringField: "test 3"},
 }
+
+// TODO(js) Write a test handler, hook up to existing tests.
+// TODO(js) Write a test that creates a writer, and writes foos and bars, and calls close.
+// TODO(js) Write a test that creates a writer, and writes foos and bars, and calls cancel.

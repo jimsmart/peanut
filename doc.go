@@ -4,6 +4,7 @@
 //
 // Each distinct struct type sent to Write() is written to an individual file/table,
 // each named according to the name of the struct.
+// Field/column names in each file/table are derived from struct tags.
 //
 // Currently supported formats are SQLite, JSON Lines (JSONL), CSV/TSV, and Excel.
 // Additional writers are also provided to assist with testing and debugging.
@@ -31,7 +32,7 @@
 //  	ParentID string `peanut:"parent_id"`
 //  }
 //
-// All writers use the same tags.
+// All writers use the same tags. Fields without tags do not get written as output.
 //
 // Usage
 //

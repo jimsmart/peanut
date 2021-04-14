@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/jimsmart/elektra/scraper/peanut"
+	"github.com/jimsmart/peanut"
 )
 
 var _ = Describe("LogWriter", func() {
