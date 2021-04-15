@@ -1,5 +1,10 @@
 package peanut_test
 
+import (
+	"github.com/jimsmart/peanut"
+	. "github.com/onsi/gomega"
+)
+
 type Foo struct {
 	StringField  string `peanut:"foo_string1"`
 	IntField     int    `peanut:"foo_int1"`
@@ -23,6 +28,38 @@ var testOutputBar = []*Bar{
 	{IntField: 3, StringField: "test 3"},
 }
 
-// TODO(js) Write a test handler, hook up to existing tests.
-// TODO(js) Write a test that creates a writer, and writes foos and bars, and calls close.
-// TODO(js) Write a test that creates a writer, and writes foos and bars, and calls cancel.
+func testWritesAndCloseSequential(w peanut.Writer) {
+	var err error
+	for i := range testOutputFoo {
+		err = w.Write(testOutputFoo[i])
+		Expect(err).To(BeNil())
+	}
+	for i := range testOutputBar {
+		err = w.Write(testOutputBar[i])
+		Expect(err).To(BeNil())
+	}
+	err = w.Close()
+	Expect(err).To(BeNil())
+}
+
+func testWritesAndCloseInterleaved(w peanut.Writer) {
+	var err error
+	for i := range testOutputFoo {
+		err = w.Write(testOutputFoo[i])
+		Expect(err).To(BeNil())
+		err = w.Write(testOutputBar[i])
+		Expect(err).To(BeNil())
+	}
+	err = w.Close()
+	Expect(err).To(BeNil())
+}
+
+func testWritesAndCancel(w peanut.Writer) {
+	var err error
+	err = w.Write(testOutputFoo[0])
+	Expect(err).To(BeNil())
+	err = w.Write(testOutputBar[0])
+	Expect(err).To(BeNil())
+	err = w.Cancel()
+	Expect(err).To(BeNil())
+}

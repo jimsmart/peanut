@@ -11,31 +11,26 @@ var _ = Describe("MultiWriter", func() {
 
 	It("should call the methods of the writers it wraps", func() {
 
-		testOutput := []*Foo{
-			{StringField: "test 1", IntField: 1},
-			{StringField: "test 2", IntField: 2},
-			{StringField: "test 3", IntField: 3},
-		}
-
-		var err error
 		w1 := &peanut.MockWriter{}
 		w2 := &peanut.MockWriter{}
 		w := peanut.MultiWriter(w1, w2)
-		for i := range testOutput {
-			err = w.Write(testOutput[i])
-			Expect(err).To(BeNil())
-		}
-		err = w.Close()
-		Expect(err).To(BeNil())
+
+		testWritesAndCloseSequential(w)
+
+		Expect(w1.CalledWrite).To(Equal(6))
+		Expect(w1.CalledClose).To(Equal(1))
+		Expect(w1.CalledCancel).To(Equal(0))
 
 		// This is a no-op on MockWriter, and just increments a counter.
-		//  This is not meant to illustrate correct usage of this API.
-		w.Cancel()
+		// This is not meant to illustrate correct usage of this API.
+		err := w.Cancel()
+		Expect(err).To(BeNil())
 
-		Expect(w1.CalledWrite).To(Equal(3))
+		Expect(w1.CalledWrite).To(Equal(6))
 		Expect(w1.CalledClose).To(Equal(1))
 		Expect(w1.CalledCancel).To(Equal(1))
 
+		// Did it actually write to both?
 		Expect(w1).To(Equal(w2))
 	})
 })
