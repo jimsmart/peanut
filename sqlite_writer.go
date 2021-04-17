@@ -37,16 +37,16 @@ import (
 // closure and cleanup of any partially written data.
 //
 // SQLiteWriter supports additional tag values to denote the primary key:
-//  type ParentRecord struct {
-//  	ParentID string `peanut:"parent_id,pk"`
+//  type Shape struct {
+//  	ShapeID  string `peanut:"shape_id,pk"`
 //  	Name     string `peanut:"name"`
-//  	Counter  int    `peanut:"counter"`
+//  	Numsides int    `peanut:"num_sides"`
 //  }
 //
-//  type ChildRecord struct {
-//  	ChildID  string `peanut:"child_id,pk"`
-//  	Name     string `peanut:"name"`
-//  	ParentID string `peanut:"parent_id"`
+//  type Color struct {
+//  	ColorID string `peanut:"color_id,pk"`
+//  	Name    string `peanut:"name"`
+//  	RBG     string `peanut:"rgb"`
 //  }
 // Compound primary keys are also supported.
 //
