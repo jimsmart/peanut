@@ -40,7 +40,7 @@ import (
 //  type Shape struct {
 //  	ShapeID  string `peanut:"shape_id,pk"`
 //  	Name     string `peanut:"name"`
-//  	Numsides int    `peanut:"num_sides"`
+//  	NumSides int    `peanut:"num_sides"`
 //  }
 //
 //  type Color struct {
