@@ -3,7 +3,6 @@ package peanut
 import (
 	"encoding/csv"
 	"io/ioutil"
-	"log"
 	"os"
 	"reflect"
 )
@@ -91,7 +90,6 @@ func (w *CSVWriter) register(x interface{}) (reflect.Type, error) {
 	name := w.prefix + t.Name() + w.suffix + w.extension
 	file, err := ioutil.TempFile("", "atomic-")
 	if err != nil {
-		log.Printf("Error %s", err)
 		return nil, err
 	}
 	cw := csv.NewWriter(file)
@@ -100,7 +98,6 @@ func (w *CSVWriter) register(x interface{}) (reflect.Type, error) {
 
 	err = cw.Write(w.headersByType[t])
 	if err != nil {
-		log.Printf("Error %s", err)
 		return nil, err
 	}
 	return t, nil
@@ -130,7 +127,6 @@ func (w *CSVWriter) Close() error {
 		c.csvw.Flush()
 		err = c.csvw.Error()
 		if err != nil {
-			log.Printf("Error %s", err)
 			cerr = err
 		}
 
@@ -138,7 +134,6 @@ func (w *CSVWriter) Close() error {
 		// mode 0600) before renaming.
 		err = c.file.Chmod(0644)
 		if err != nil {
-			log.Printf("Error %s", err)
 			cerr = err
 		}
 
@@ -151,7 +146,6 @@ func (w *CSVWriter) Close() error {
 
 		err = c.file.Close()
 		if err != nil {
-			log.Printf("Error %s", err)
 			cerr = err
 		}
 
@@ -164,7 +158,6 @@ func (w *CSVWriter) Close() error {
 
 		err = os.Rename(c.file.Name(), c.filename)
 		if err != nil {
-			log.Printf("Error %s", err)
 			cerr = err
 		}
 
@@ -184,13 +177,11 @@ func (w *CSVWriter) Cancel() error {
 
 		err = c.file.Close()
 		if err != nil {
-			log.Printf("Error %s", err)
 			rerr = err
 		}
 
 		err = os.Remove(c.file.Name())
 		if err != nil {
-			log.Printf("Error %s", err)
 			rerr = err
 		}
 	}

@@ -1,6 +1,11 @@
 TODO
 ====
 
+- Tests for:
+  - SQLite writer
+  - Excel writer
+
+
 
 - Unify the tests:
  - Shared structs
@@ -11,13 +16,14 @@ TODO
 
 - Writers currently process all fields. We should ignore those without appropriate tags.
  - I'm pretty sure this has been done, but we should ensure it is covered by a test.
+ - This is now covered by a test - once all writers use the same tests :)
 
-
-- Write thorough tests for each non-trivial writer.
-  - SQLiteWriter
-  - ExcelWriter
 
 - Support more types (currently only string and int)
+
+
+- Improve the examples in Godocs.
+
 
 
 - Writers
@@ -29,7 +35,7 @@ TODO
   - Should be exposed as scrutiny metadata maybe?
 
 
-- Switch existing reflect stuff in Write to use reflectwalk.
+- Switch existing reflect stuff in Write to use reflectwalk?
  - Actually, I think this is overkill, we process flat structs.
  - On second thoughts, it may simplify some of our code.
 

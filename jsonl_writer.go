@@ -9,7 +9,6 @@ import (
 	"bufio"
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"os"
 	"reflect"
 )
@@ -75,7 +74,6 @@ func (w *JSONLWriter) register(x interface{}) (reflect.Type, error) {
 	// file, err := os.Create(name)
 	file, err := ioutil.TempFile("", "atomic-")
 	if err != nil {
-		log.Printf("Error %s", err)
 		return nil, err
 	}
 	bw := bufio.NewWriter(file)
@@ -109,7 +107,6 @@ func (w *JSONLWriter) Close() error {
 		var err error
 		err = c.bw.Flush()
 		if err != nil {
-			log.Printf("Error %s", err)
 			cerr = err
 		}
 
@@ -117,7 +114,6 @@ func (w *JSONLWriter) Close() error {
 		// mode 0600) before renaming.
 		err = c.file.Chmod(0644)
 		if err != nil {
-			log.Printf("Error %s", err)
 			cerr = err
 		}
 
@@ -130,7 +126,6 @@ func (w *JSONLWriter) Close() error {
 
 		err = c.file.Close()
 		if err != nil {
-			log.Printf("Error %s", err)
 			cerr = err
 		}
 
@@ -143,7 +138,6 @@ func (w *JSONLWriter) Close() error {
 
 		err = os.Rename(c.file.Name(), c.filename)
 		if err != nil {
-			log.Printf("Error %s", err)
 			cerr = err
 		}
 
@@ -167,13 +161,11 @@ func (w *JSONLWriter) Cancel() error {
 
 		err = c.file.Close()
 		if err != nil {
-			log.Printf("Error %s", err)
 			rerr = err
 		}
 
 		err = os.Remove(c.file.Name())
 		if err != nil {
-			log.Printf("Error %s", err)
 			rerr = err
 		}
 	}

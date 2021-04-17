@@ -3,7 +3,6 @@ package peanut
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 	"reflect"
 	"strings"
@@ -226,7 +225,6 @@ func (w *SQLiteWriter) Close() error {
 
 	err = os.Rename(w.tmpFilename, w.dstFilename)
 	if err != nil {
-		log.Printf("Error %s", err)
 		rerr = err
 	}
 
@@ -244,7 +242,6 @@ func (w *SQLiteWriter) close() error {
 
 		err = stmt.Close()
 		if err != nil {
-			log.Printf("Error %s", err)
 			cerr = err
 		}
 
@@ -273,7 +270,6 @@ func (w *SQLiteWriter) Cancel() error {
 
 	err := os.Remove(w.tmpFilename)
 	if err != nil {
-		log.Printf("Error %s", err)
 		rerr = err
 	}
 

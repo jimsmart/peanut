@@ -2,7 +2,6 @@ package peanut
 
 import (
 	"fmt"
-	"log"
 	"reflect"
 )
 
@@ -69,7 +68,6 @@ func (w *ExcelWriter) register(x interface{}) (reflect.Type, error) {
 	h := convert(w.headersByType[t])
 	err = excel.AddRow(h...)
 	if err != nil {
-		log.Printf("Error %s", err)
 		return nil, err
 	}
 	return t, nil
@@ -102,7 +100,6 @@ func (w *ExcelWriter) Close() error {
 	for _, excel := range w.builderByType {
 		err := excel.Save()
 		if err != nil {
-			log.Printf("Error %s", err)
 			rerr = err
 		}
 	}
