@@ -20,16 +20,16 @@
 //
 // Structs to be used with peanut must have appropriately tagged
 // fields, for example:
-//  type ParentRecord struct {
-//  	ParentID string `peanut:"parent_id"`
+//  type Shape struct {
+//  	ShapeID  string `peanut:"shape_id"`
 //  	Name     string `peanut:"name"`
-//  	Counter  int    `peanut:"counter"`
+//  	NumSides int    `peanut:"num_sides"`
 //  }
 //
-//  type ChildRecord struct {
-//  	ChildID  string `peanut:"child_id"`
+//  type Color struct {
+//  	ColorID  string `peanut:"color_id"`
 //  	Name     string `peanut:"name"`
-//  	ParentID string `peanut:"parent_id"`
+//  	RBG      string `peanut:"rgb"`
 //  }
 //
 // All writers use the same tags. Fields without tags do not get written as output.
@@ -40,26 +40,26 @@
 //  w := peanut.NewCSVWriter("/some/path/my-data-", "")
 //
 // Next, write some records to it:
-// 	x := &ParentRecord{
-// 		ParentID: "pid1",
-// 		Name:     "foo",
-// 		Counter:  123,
+// 	x := &Shape{
+// 		ShapeID:  "sid1",
+// 		Name:     "Square",
+// 		NumSides: 4,
 // 	}
 // 	err := w.Write(x)
 // 	// ...
 //
-// 	y := &ChildRecord{
-// 		ChildID:  "cid1",
-// 		Name:     "bar",
-// 		ParentID: "pid1",
+// 	y := &Color{
+// 		ColorID: "cid1",
+// 		Name:    "red",
+// 		RGB:     "ff0000",
 // 	}
 // 	err = w.Write(y)
 // 	// ...
 //
-// 	z := &ParentRecord{
-// 		ParentID: "pid2",
-// 		Name:     "baz",
-// 		Counter:  456,
+// 	z := &Shape{
+// 		ShapeID:  "sid2",
+// 		Name:     "Octogon",
+// 		NumSides: 8,
 // 	}
 // 	err = w.Write(z)
 // 	// ...
@@ -68,8 +68,8 @@
 //  err = w.Close()
 //
 //  // Output files will be:
-//  // /some/path/my-data-ParentRecord.csv
-//  // /some/path/my-data-ChildRecord.csv
+//  // /some/path/my-data-Shape.csv
+//  // /some/path/my-data-Color.csv
 //
 // Or, to abort the whole operation in the event of an error or cancellation while writing records:
 //  err = w.Cancel()
@@ -81,7 +81,7 @@
 //  w2 := peanut.NewExcelWriter("/some/path/my-data-", "")
 //  w3 := &peanut.LogWriter{}
 //  w := peanut.MultiWriter(w1, w2, w3)
-// Here w will write records to CSV, Excel and a logger.
+// Here w will write records to CSV files, Excel files, and a logger.
 //
 // Limitations
 //
