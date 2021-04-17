@@ -7,7 +7,10 @@
 [![Used By](https://img.shields.io/sourcegraph/rrc/github.com/jimsmart/peanut.svg)](https://sourcegraph.com/github.com/jimsmart/peanut)
 [![Godoc](https://img.shields.io/badge/godoc-reference-blue.svg)](https://godoc.org/github.com/jimsmart/peanut)
 
-peanut writes data structs without ceremony in a variety of formats.
+peanut is a [Go](https://golang.org/) package to write tagged data structs in a variety of formats.
+
+Its primary purpose is to provide a single consistent interface
+for easy, ceremony-free persistence of record-based struct data.
 
 ## About
 
@@ -23,7 +26,7 @@ Get the package:
 go get github.com/jimsmart/peanut
 ```
 
-Use the package within your code (see examples below):
+Use the package within your code:
 
 ```go
 import "github.com/jimsmart/peanut"

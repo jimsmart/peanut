@@ -1,6 +1,6 @@
-// Package peanut writes data structs in a variety of formats.
+// Package peanut writes tagged data structs in a variety of formats.
 // Its primary purpose is to provide a single consistent interface
-// for easy, ceremony-free persistence of struct data.
+// for easy, ceremony-free persistence of record-based struct data.
 //
 // Each distinct struct type sent to Write() is written to an individual file/table,
 // each named according to the name of the struct.

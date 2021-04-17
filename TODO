@@ -2,30 +2,8 @@ TODO
 ====
 
 
-- Supported data types
- - string
- - bool
- - float64 
- - float32 
- - int
- - int8
- - int16
- - int32
- - int64
- - uint
- - uint8
- - uint16
- - uint32
- - uint64
-
-
-- Improve the examples in Godocs.
-
-
-
 - Writers
  - Should writers throw an error if the given type to write has no tagged fields?
- - Or should they simply fall back to using field names when tags are not present?
 
 
 - Logging for CSV and Excel writers on completion, detailing files written?
@@ -35,7 +13,6 @@ TODO
 - Switch existing reflect stuff in Write to use reflectwalk?
  - Actually, I think this is overkill, we process flat structs.
  - On second thoughts, it may simplify some of our code.
-
 
 
 New writer types
