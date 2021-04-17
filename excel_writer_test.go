@@ -10,7 +10,7 @@ import (
 	"github.com/jimsmart/peanut"
 )
 
-var _ = Describe("XecelWriter", func() {
+var _ = Describe("ExcelWriter", func() {
 
 	newFn := func(suffix string) peanut.Writer {
 		w := peanut.NewExcelWriter("./test/output-", suffix)
