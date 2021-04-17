@@ -6,14 +6,14 @@ import (
 )
 
 type Foo struct {
-	StringField  string `peanut:"foo_string1"`
+	StringField  string `peanut:"foo_string1,pk"`
 	IntField     int    `peanut:"foo_int1"`
 	IgnoredField int
 }
 
 type Bar struct {
-	IntField    int    `peanut:"bar_int2"`
-	StringField string `peanut:"bar_string2"`
+	IntField    int    `peanut:"bar_int2,pk"`
+	StringField string `peanut:"bar_string2,pk"`
 }
 
 var testOutputFoo = []*Foo{

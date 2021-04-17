@@ -3,7 +3,6 @@ TODO
 
 - Tests for:
   - SQLite writer
-  - Excel writer
 
 
 - Writers currently process all fields. We should ignore those without appropriate tags.

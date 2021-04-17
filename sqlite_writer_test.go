@@ -1,50 +1,169 @@
 package peanut_test
 
 import (
-	"github.com/jimsmart/peanut"
+	"database/sql"
+	"os"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"github.com/jimsmart/peanut"
+	"github.com/jimsmart/schema"
+
+	// Import Sqlite db driver.
+	_ "github.com/mattn/go-sqlite3"
 )
+
+type tableResults struct {
+	columns []string
+	types   []string
+	pks     []string
+	data    [][]string
+}
 
 var _ = Describe("SQLiteWriter", func() {
 
-	XIt("should write the correct data when structs are written", func() {
+	newFn := func(suffix string) peanut.Writer {
+		w := peanut.NewSQLiteWriter("./test/output" + suffix)
+		return w
+	}
 
-		// type Foo struct {
-		// 	StringField string `peanut:"test_string1,pk"`
-		// 	IntField    int    `peanut:"test_int1"`
-		// 	// IgnoredField string // TODO Currently all fields are processed. We should ignore those without appropriate tags.
-		// }
+	expectedOutput := map[string]*tableResults{
+		"Foo": {
+			columns: []string{"foo_string1", "foo_int1"},
+			types:   []string{"TEXT", "INTEGER"},
+			pks:     []string{"foo_string1"},
+			data: [][]string{
+				{"test 1", "1"},
+				{"test 2", "2"},
+				{"test 3", "3"},
+			},
+		},
+		"Bar": {
+			columns: []string{"bar_int2", "bar_string2"},
+			types:   []string{"INTEGER", "TEXT"},
+			pks:     []string{"bar_int2", "bar_string2"},
+			data: [][]string{
+				{"1", "test 1"},
+				{"2", "test 2"},
+				{"3", "test 3"},
+			},
+		},
+	}
 
-		testOutput := []*Foo{
-			{StringField: "test 1", IntField: 1},
-			{StringField: "test 2", IntField: 2},
-			{StringField: "test 3", IntField: 3},
-		}
+	AfterEach(func() {
+		os.Remove("./test/output-sequential.sqlite")
+		os.Remove("./test/output-interleave.sqlite")
+	})
 
-		// expectedOutput := "<Foo> test_string1: test 1 test_int1: 1\n" +
-		// 	"<Foo> test_string1: test 2 test_int1: 2\n" +
-		// 	"<Foo> test_string1: test 3 test_int1: 3\n" +
-		// 	"Called LogWriter.Close\n" +
-		// 	"Called LogWriter.Cancel\n"
+	It("should write the correct data when sequential structs are written", func() {
+		w := newFn("-sequential")
 
-		var err error
+		testWritesAndCloseSequential(w)
 
-		w := peanut.NewSQLiteWriter("foo")
-
-		for i := range testOutput {
-			err = w.Write(testOutput[i])
-			Expect(err).To(BeNil())
-		}
-		err = w.Close()
+		output1, err := readSQLite("./test/output-sequential.sqlite")
 		Expect(err).To(BeNil())
+		Expect(output1).To(Equal(expectedOutput))
+	})
 
-		// // This only logs a message for LogWriter.
-		// // This is not actually proper usage of the API in any way.
-		// w.Cancel()
+	It("should write the correct data when interleaved structs are written", func() {
+		w := newFn("-interleave")
 
-		// output := string(buf.Bytes())
-		// Expect(output).To(Equal(expectedOutput))
+		testWritesAndCloseSequential(w)
+
+		output1, err := readSQLite("./test/output-interleave.sqlite")
+		Expect(err).To(BeNil())
+		Expect(output1).To(Equal(expectedOutput))
+	})
+
+	It("should not write anything when structs are written and cancel is called", func() {
+		w := newFn("-cancel")
+
+		testWritesAndCancel(w)
+
+		Expect("./test/output-cancel.sqlite").ToNot(BeAnExistingFile())
 	})
 
 })
+
+func readSQLite(filename string) (map[string]*tableResults, error) {
+	db, err := sql.Open("sqlite3", filename)
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	out := make(map[string]*tableResults)
+
+	tables, err := schema.Tables(db)
+	if err != nil {
+		return nil, err
+	}
+	for name, ct := range tables {
+		var headers []string
+		var dbtypes []string
+		for i := range ct {
+			headers = append(headers, ct[i].Name())
+			dbtypes = append(dbtypes, ct[i].DatabaseTypeName())
+		}
+
+		pks, err := schema.PrimaryKey(db, "", name[1])
+		if err != nil {
+			return nil, err
+		}
+
+		data, err := readData(db, name[1])
+		if err != nil {
+			return nil, err
+		}
+
+		result := &tableResults{
+			columns: headers,
+			types:   dbtypes,
+			pks:     pks,
+			data:    data,
+		}
+
+		out[name[1]] = result
+	}
+	return out, nil
+}
+
+func readData(db *sql.DB, table string) ([][]string, error) {
+	q := "SELECT * FROM " + table
+	rows, err := db.Query(q)
+	if err != nil {
+		return nil, err
+	}
+
+	cols, err := rows.Columns()
+	if err != nil {
+		return nil, err
+	}
+
+	rawResults := make([][]byte, len(cols))
+	results := make([]string, len(cols))
+	dest := make([]interface{}, len(cols))
+	for i := range rawResults {
+		// Put pointers to each string in the interface slice
+		dest[i] = &rawResults[i]
+	}
+
+	var out [][]string
+	for rows.Next() {
+		err = rows.Scan(dest...)
+		if err != nil {
+			return nil, err
+		}
+		for i, raw := range rawResults {
+			if raw != nil {
+				results[i] = string(raw)
+			}
+		}
+		row := make([]string, len(cols))
+		copy(row, results)
+		out = append(out, row)
+	}
+
+	return out, nil
+}
