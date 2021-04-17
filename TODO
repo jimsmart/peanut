@@ -6,14 +6,6 @@ TODO
   - Excel writer
 
 
-
-- Unify the tests:
- - Shared structs
- - Individual constructor/setup for each writer
- - Shared test methods
- - Individual verification methods for each writer
- - Could include checking output file exists / doesn't exist
-
 - Writers currently process all fields. We should ignore those without appropriate tags.
  - I'm pretty sure this has been done, but we should ensure it is covered by a test.
  - This is now covered by a test - once all writers use the same tests :)

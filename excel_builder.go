@@ -1,8 +1,6 @@
 package peanut
 
 import (
-	"log"
-
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 )
 
@@ -34,12 +32,10 @@ func newExcelBuilder(filename string) (*excelBuilder, error) {
 func (e *excelBuilder) AddRow(data ...interface{}) error {
 	c, err := excelize.CoordinatesToCellName(1, e.row)
 	if err != nil {
-		log.Printf("Error %s", err)
 		return err
 	}
 	err = e.sw.SetRow(c, data)
 	if err != nil {
-		log.Printf("Error %s", err)
 		return err
 	}
 	e.row++
