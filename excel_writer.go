@@ -26,11 +26,6 @@ var _ Writer = &ExcelWriter{}
 // In the event of an error or cancellation, the
 // caller must call Cancel before quiting, to ensure
 // closure and cleanup of any partially written files.
-//
-// Note that ExcelWriter currently only handles
-// string and int types —
-// with strings being output as text labels, and
-// ints as numeric values.
 type ExcelWriter struct {
 	*base
 	prefix        string
@@ -126,7 +121,9 @@ func excelValuesFrom(x interface{}) []interface{} {
 	var out []interface{}
 	reflectStructValues(x, func(name string, t reflect.Type, v interface{}, tag string) {
 		switch t.Kind() {
-		case reflect.String, reflect.Int:
+		case reflect.String, reflect.Int, reflect.Bool, reflect.Float64, reflect.Float32,
+			reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+			reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			out = append(out, v)
 		default:
 			m := fmt.Sprintf("Unknown type: %v", v)

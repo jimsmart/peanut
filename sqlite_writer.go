@@ -36,10 +36,6 @@ import (
 // caller must call Cancel before quiting, to ensure
 // closure and cleanup of any partially written data.
 //
-// Note that SQLiteWriter currently only handles
-// string and int types:
-// strings are output as TEXT, and ints as INTEGER.
-//
 // SQLiteWriter supports additional tag values to denote the primary key:
 //  type ParentRecord struct {
 //  	ParentID string `peanut:"parent_id,pk"`
@@ -53,6 +49,8 @@ import (
 //  	ParentID string `peanut:"parent_id"`
 //  }
 // Compound primary keys are also supported.
+//
+// SQLiteWriter has no support for foreign keys, indexes, etc.
 type SQLiteWriter struct {
 	*base
 	tmpFilename  string                     // tmpFilename is the filename used by the temp file.
@@ -144,8 +142,26 @@ func (w *SQLiteWriter) createDDL(t reflect.Type) string {
 		switch typs[i].Kind() {
 		case reflect.String:
 			col += "TEXT"
-		case reflect.Int:
-			col += "INTEGER"
+		case reflect.Int, reflect.Int64:
+			col += "INT64"
+		case reflect.Bool:
+			col += "BOOLEAN"
+		case reflect.Float64, reflect.Float32:
+			col += "REAL"
+		case reflect.Int8:
+			col += "INT8"
+		case reflect.Int16:
+			col += "INT16"
+		case reflect.Int32:
+			col += "INT32"
+		case reflect.Uint8:
+			col += "UNSIGNED INT8"
+		case reflect.Uint16:
+			col += "UNSIGNED INT16"
+		case reflect.Uint32:
+			col += "UNSIGNED INT32"
+		case reflect.Uint, reflect.Uint64:
+			col += "UNSIGNED INT64"
 		default:
 			m := fmt.Sprintf("Unknown type: %v", t.Name())
 			panic(m)

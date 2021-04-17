@@ -29,10 +29,6 @@ var _ Writer = &JSONLWriter{}
 // In the event of an error or cancellation, the
 // caller must call Cancel before quiting, to ensure
 // closure and cleanup of any partially written files.
-//
-// Note that JSONLWriter currently only handles
-// string and int types:
-// strings are output as strings, and ints as numbers.
 type JSONLWriter struct {
 	*base
 	prefix        string

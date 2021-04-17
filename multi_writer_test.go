@@ -17,7 +17,7 @@ var _ = Describe("MultiWriter", func() {
 
 		testWritesAndCloseSequential(w)
 
-		Expect(w1.CalledWrite).To(Equal(6))
+		Expect(w1.CalledWrite).To(Equal(7))
 		Expect(w1.CalledClose).To(Equal(1))
 		Expect(w1.CalledCancel).To(Equal(0))
 
@@ -26,7 +26,7 @@ var _ = Describe("MultiWriter", func() {
 		err := w.Cancel()
 		Expect(err).To(BeNil())
 
-		Expect(w1.CalledWrite).To(Equal(6))
+		Expect(w1.CalledWrite).To(Equal(7))
 		Expect(w1.CalledClose).To(Equal(1))
 		Expect(w1.CalledCancel).To(Equal(1))
 

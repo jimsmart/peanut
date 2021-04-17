@@ -1,16 +1,22 @@
 TODO
 ====
 
-- Tests for:
-  - SQLite writer
 
-
-- Writers currently process all fields. We should ignore those without appropriate tags.
- - I'm pretty sure this has been done, but we should ensure it is covered by a test.
- - This is now covered by a test - once all writers use the same tests :)
-
-
-- Support more types (currently only string and int)
+- Supported data types
+ - string
+ - bool
+ - float64 
+ - float32 
+ - int
+ - int8
+ - int16
+ - int32
+ - int64
+ - uint
+ - uint8
+ - uint16
+ - uint32
+ - uint64
 
 
 - Improve the examples in Godocs.

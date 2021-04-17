@@ -75,7 +75,29 @@ func stringValuesAsMap(x interface{}) map[string]string {
 		case reflect.String:
 			out[tag] = v.(string)
 		case reflect.Int:
-			out[tag] = strconv.Itoa(v.(int))
+			out[tag] = strconv.FormatInt(int64(v.(int)), 10)
+		case reflect.Bool:
+			out[tag] = strconv.FormatBool(v.(bool))
+		case reflect.Float64, reflect.Float32:
+			out[tag] = fmt.Sprint(v.(float64)) // TODO(js) This seems lazy.
+		case reflect.Int8:
+			out[tag] = strconv.FormatInt(int64(v.(int8)), 10)
+		case reflect.Int16:
+			out[tag] = strconv.FormatInt(int64(v.(int16)), 10)
+		case reflect.Int32:
+			out[tag] = strconv.FormatInt(int64(v.(int32)), 10)
+		case reflect.Int64:
+			out[tag] = strconv.FormatInt(v.(int64), 10)
+		case reflect.Uint:
+			out[tag] = strconv.FormatUint(uint64(v.(uint)), 10)
+		case reflect.Uint8:
+			out[tag] = strconv.FormatUint(uint64(v.(uint8)), 10)
+		case reflect.Uint16:
+			out[tag] = strconv.FormatUint(uint64(v.(uint16)), 10)
+		case reflect.Uint32:
+			out[tag] = strconv.FormatUint(uint64(v.(uint32)), 10)
+		case reflect.Uint64:
+			out[tag] = strconv.FormatUint(v.(uint64), 10)
 		default:
 			m := fmt.Sprintf("Unknown type: %v", v)
 			panic(m)

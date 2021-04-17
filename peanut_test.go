@@ -6,14 +6,31 @@ import (
 )
 
 type Foo struct {
-	StringField  string `peanut:"foo_string1,pk"`
-	IntField     int    `peanut:"foo_int1"`
-	IgnoredField int
+	StringField string `peanut:"foo_string,pk"`
+	IntField    int    `peanut:"foo_int"`
 }
 
 type Bar struct {
-	IntField    int    `peanut:"bar_int2,pk"`
-	StringField string `peanut:"bar_string2,pk"`
+	IntField    int    `peanut:"bar_int,pk"`
+	StringField string `peanut:"bar_string,pk"`
+}
+
+type Baz struct {
+	StringField  string  `peanut:"baz_string,pk"`
+	BoolField    bool    `peanut:"baz_bool"`
+	Float32Field float64 `peanut:"baz_float32"`
+	Float64Field float64 `peanut:"baz_float64"`
+	IntField     int     `peanut:"baz_int"`
+	Int8Field    int8    `peanut:"baz_int8"`
+	Int16Field   int16   `peanut:"baz_int16"`
+	Int32Field   int32   `peanut:"baz_int32"`
+	Int64Field   int64   `peanut:"baz_int64"`
+	UintField    int     `peanut:"baz_uint"`
+	Uint8Field   int8    `peanut:"baz_uint8"`
+	Uint16Field  int16   `peanut:"baz_uint16"`
+	Uint32Field  int32   `peanut:"baz_uint32"`
+	Uint64Field  int64   `peanut:"baz_uint64"`
+	IgnoredField int     // No tag.
 }
 
 var testOutputFoo = []*Foo{
@@ -28,6 +45,25 @@ var testOutputBar = []*Bar{
 	{IntField: 3, StringField: "test 3"},
 }
 
+var testOutputBaz = []*Baz{
+	{
+		StringField:  "test 1",
+		BoolField:    true,
+		Float32Field: 1.234,
+		Float64Field: 9.876,
+		IntField:     -12345,
+		Int8Field:    -8,
+		Int16Field:   -16,
+		Int32Field:   -32,
+		Int64Field:   -64,
+		UintField:    12345,
+		Uint8Field:   8,
+		Uint16Field:  16,
+		Uint32Field:  32,
+		Uint64Field:  64,
+	},
+}
+
 func testWritesAndCloseSequential(w peanut.Writer) {
 	var err error
 	for i := range testOutputFoo {
@@ -36,6 +72,10 @@ func testWritesAndCloseSequential(w peanut.Writer) {
 	}
 	for i := range testOutputBar {
 		err = w.Write(testOutputBar[i])
+		Expect(err).To(BeNil())
+	}
+	for i := range testOutputBaz {
+		err = w.Write(testOutputBaz[i])
 		Expect(err).To(BeNil())
 	}
 	err = w.Close()
@@ -48,6 +88,10 @@ func testWritesAndCloseInterleaved(w peanut.Writer) {
 		err = w.Write(testOutputFoo[i])
 		Expect(err).To(BeNil())
 		err = w.Write(testOutputBar[i])
+		Expect(err).To(BeNil())
+	}
+	for i := range testOutputBaz {
+		err = w.Write(testOutputBaz[i])
 		Expect(err).To(BeNil())
 	}
 	err = w.Close()

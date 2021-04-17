@@ -6,7 +6,7 @@
 // each named according to the name of the struct.
 // Field/column names in each file/table are derived from struct tags.
 //
-// Currently supported formats are SQLite, JSON Lines (JSONL), CSV/TSV, and Excel.
+// Currently supported formats are CSV, TSV, Excel (.xlsx), JSON Lines (JSONL), and SQLite.
 // Additional writers are also provided to assist with testing and debugging.
 // Mutiple writers can be combined using MultiWriter.
 //
@@ -46,7 +46,7 @@
 // 		Counter:  123,
 // 	}
 // 	err := w.Write(x)
-// 	// Handle error...
+// 	// ...
 //
 // 	y := &ChildRecord{
 // 		ChildID:  "cid1",
@@ -54,7 +54,7 @@
 // 		ParentID: "pid1",
 // 	}
 // 	err = w.Write(y)
-// 	// Handle error...
+// 	// ...
 //
 // 	z := &ParentRecord{
 // 		ParentID: "pid2",
@@ -62,11 +62,10 @@
 // 		Counter:  456,
 // 	}
 // 	err = w.Write(z)
-// 	// Handle error...
+// 	// ...
 //
 // When successfully completed:
 //  err = w.Close()
-//  // Handle error...
 //
 //  // Output files will be:
 //  // /some/path/my-data-ParentRecord.csv
@@ -74,7 +73,6 @@
 //
 // Or, to abort the whole operation in the event of an error or cancellation while writing records:
 //  err = w.Cancel()
-//  // Handle error...
 //
 // MultiWriter
 //
@@ -90,5 +88,8 @@
 // Behaviour is undefined for types with the same name
 // but in different packages, such as package1.Foo and package2.Foo.
 //
-// Currently only types string and int are fully supported by all writers.
+// Supported datatypes for struct fields: string, bool, float32, float64,
+// int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64.
+//
+// Pointer following and nested structs are currently unsupported.
 package peanut

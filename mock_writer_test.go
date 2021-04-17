@@ -9,20 +9,39 @@ import (
 var _ = Describe("MockWriter", func() {
 
 	expectedHeaders := map[string][]string{
-		"Foo": {"foo_string1", "foo_int1"},
-		"Bar": {"bar_int2", "bar_string2"},
+		"Foo": {"foo_string", "foo_int"},
+		"Bar": {"bar_int", "bar_string"},
+		"Baz": {"baz_string", "baz_bool", "baz_float32", "baz_float64", "baz_int", "baz_int8", "baz_int16", "baz_int32", "baz_int64", "baz_uint", "baz_uint8", "baz_uint16", "baz_uint32", "baz_uint64"},
 	}
 
 	expectedData := map[string][]map[string]string{
 		"Foo": {
-			{"foo_string1": "test 1", "foo_int1": "1"},
-			{"foo_string1": "test 2", "foo_int1": "2"},
-			{"foo_string1": "test 3", "foo_int1": "3"},
+			{"foo_string": "test 1", "foo_int": "1"},
+			{"foo_string": "test 2", "foo_int": "2"},
+			{"foo_string": "test 3", "foo_int": "3"},
 		},
 		"Bar": {
-			{"bar_int2": "1", "bar_string2": "test 1"},
-			{"bar_int2": "2", "bar_string2": "test 2"},
-			{"bar_int2": "3", "bar_string2": "test 3"},
+			{"bar_int": "1", "bar_string": "test 1"},
+			{"bar_int": "2", "bar_string": "test 2"},
+			{"bar_int": "3", "bar_string": "test 3"},
+		},
+		"Baz": {
+			{
+				"baz_string":  "test 1",
+				"baz_bool":    "true",
+				"baz_float32": "1.234",
+				"baz_float64": "9.876",
+				"baz_int":     "-12345",
+				"baz_int8":    "-8",
+				"baz_int16":   "-16",
+				"baz_int32":   "-32",
+				"baz_int64":   "-64",
+				"baz_uint":    "12345",
+				"baz_uint8":   "8",
+				"baz_uint16":  "16",
+				"baz_uint32":  "32",
+				"baz_uint64":  "64",
+			},
 		},
 	}
 
@@ -34,7 +53,7 @@ var _ = Describe("MockWriter", func() {
 		Expect(w.Headers).To(Equal(expectedHeaders))
 		Expect(w.Data).To(Equal(expectedData))
 
-		Expect(w.CalledWrite).To(Equal(6))
+		Expect(w.CalledWrite).To(Equal(7))
 		Expect(w.CalledClose).To(Equal(1))
 		Expect(w.CalledCancel).To(Equal(0))
 	})
@@ -47,7 +66,7 @@ var _ = Describe("MockWriter", func() {
 		Expect(w.Headers).To(Equal(expectedHeaders))
 		Expect(w.Data).To(Equal(expectedData))
 
-		Expect(w.CalledWrite).To(Equal(6))
+		Expect(w.CalledWrite).To(Equal(7))
 		Expect(w.CalledClose).To(Equal(1))
 		Expect(w.CalledCancel).To(Equal(0))
 	})

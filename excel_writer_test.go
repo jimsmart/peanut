@@ -18,24 +18,31 @@ var _ = Describe("ExcelWriter", func() {
 	}
 
 	expectedOutput1 := [][]string{
-		{"foo_string1", "foo_int1"},
+		{"foo_string", "foo_int"},
 		{"test 1", "1"},
 		{"test 2", "2"},
 		{"test 3", "3"},
 	}
 
 	expectedOutput2 := [][]string{
-		{"bar_int2", "bar_string2"},
+		{"bar_int", "bar_string"},
 		{"1", "test 1"},
 		{"2", "test 2"},
 		{"3", "test 3"},
 	}
 
+	expectedOutput3 := [][]string{
+		{"baz_string", "baz_bool", "baz_float32", "baz_float64", "baz_int", "baz_int8", "baz_int16", "baz_int32", "baz_int64", "baz_uint", "baz_uint8", "baz_uint16", "baz_uint32", "baz_uint64"},
+		{"test 1", "1", "1.234", "9.876", "-12345", "-8", "-16", "-32", "-64", "12345", "8", "16", "32", "64"},
+	}
+
 	AfterEach(func() {
 		os.Remove("./test/output-Foo-sequential.xlsx")
 		os.Remove("./test/output-Bar-sequential.xlsx")
+		os.Remove("./test/output-Baz-sequential.xlsx")
 		os.Remove("./test/output-Foo-interleave.xlsx")
 		os.Remove("./test/output-Bar-interleave.xlsx")
+		os.Remove("./test/output-Baz-interleave.xlsx")
 	})
 
 	It("should write the correct data when sequential structs are written", func() {
@@ -50,6 +57,10 @@ var _ = Describe("ExcelWriter", func() {
 		output2, err := readExcel("./test/output-Bar-sequential.xlsx")
 		Expect(err).To(BeNil())
 		Expect(output2).To(Equal(expectedOutput2))
+
+		output3, err := readExcel("./test/output-Baz-sequential.xlsx")
+		Expect(err).To(BeNil())
+		Expect(output3).To(Equal(expectedOutput3))
 	})
 
 	It("should write the correct data when interleaved structs are written", func() {
@@ -64,6 +75,10 @@ var _ = Describe("ExcelWriter", func() {
 		output2, err := readExcel("./test/output-Bar-interleave.xlsx")
 		Expect(err).To(BeNil())
 		Expect(output2).To(Equal(expectedOutput2))
+
+		output3, err := readExcel("./test/output-Baz-interleave.xlsx")
+		Expect(err).To(BeNil())
+		Expect(output3).To(Equal(expectedOutput3))
 	})
 
 	It("should not write anything when structs are written and cancel is called", func() {

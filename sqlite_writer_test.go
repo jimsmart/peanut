@@ -30,9 +30,9 @@ var _ = Describe("SQLiteWriter", func() {
 
 	expectedOutput := map[string]*tableResults{
 		"Foo": {
-			columns: []string{"foo_string1", "foo_int1"},
-			types:   []string{"TEXT", "INTEGER"},
-			pks:     []string{"foo_string1"},
+			columns: []string{"foo_string", "foo_int"},
+			types:   []string{"TEXT", "INT64"},
+			pks:     []string{"foo_string"},
 			data: [][]string{
 				{"test 1", "1"},
 				{"test 2", "2"},
@@ -40,13 +40,21 @@ var _ = Describe("SQLiteWriter", func() {
 			},
 		},
 		"Bar": {
-			columns: []string{"bar_int2", "bar_string2"},
-			types:   []string{"INTEGER", "TEXT"},
-			pks:     []string{"bar_int2", "bar_string2"},
+			columns: []string{"bar_int", "bar_string"},
+			types:   []string{"INT64", "TEXT"},
+			pks:     []string{"bar_int", "bar_string"},
 			data: [][]string{
 				{"1", "test 1"},
 				{"2", "test 2"},
 				{"3", "test 3"},
+			},
+		},
+		"Baz": {
+			columns: []string{"baz_string", "baz_bool", "baz_float32", "baz_float64", "baz_int", "baz_int8", "baz_int16", "baz_int32", "baz_int64", "baz_uint", "baz_uint8", "baz_uint16", "baz_uint32", "baz_uint64"},
+			types:   []string{"TEXT", "BOOLEAN", "REAL", "REAL", "INT64", "INT8", "INT16", "INT32", "INT64", "INT64", "INT8", "INT16", "INT32", "INT64"},
+			pks:     []string{"baz_string"},
+			data: [][]string{
+				{"test 1", "true", "1.234", "9.876", "-12345", "-8", "-16", "-32", "-64", "12345", "8", "16", "32", "64"},
 			},
 		},
 	}

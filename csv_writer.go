@@ -30,10 +30,6 @@ var _ Writer = &CSVWriter{}
 // In the event of an error or cancellation, the
 // caller must call Cancel before quiting, to ensure
 // closure and cleanup of any partially written files.
-//
-// Note that CSVWriter currently only handles
-// string and int types,
-// both of which are output as strings.
 type CSVWriter struct {
 	*base
 	prefix        string

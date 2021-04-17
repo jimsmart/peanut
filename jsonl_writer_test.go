@@ -17,19 +17,23 @@ var _ = Describe("JSONLWriter", func() {
 		return w
 	}
 
-	expectedOutput1 := `{"foo_int1":1,"foo_string1":"test 1"}` + "\n" +
-		`{"foo_int1":2,"foo_string1":"test 2"}` + "\n" +
-		`{"foo_int1":3,"foo_string1":"test 3"}` + "\n"
+	expectedOutput1 := `{"foo_int":1,"foo_string":"test 1"}` + "\n" +
+		`{"foo_int":2,"foo_string":"test 2"}` + "\n" +
+		`{"foo_int":3,"foo_string":"test 3"}` + "\n"
 
-	expectedOutput2 := `{"bar_int2":1,"bar_string2":"test 1"}` + "\n" +
-		`{"bar_int2":2,"bar_string2":"test 2"}` + "\n" +
-		`{"bar_int2":3,"bar_string2":"test 3"}` + "\n"
+	expectedOutput2 := `{"bar_int":1,"bar_string":"test 1"}` + "\n" +
+		`{"bar_int":2,"bar_string":"test 2"}` + "\n" +
+		`{"bar_int":3,"bar_string":"test 3"}` + "\n"
+
+	expectedOutput3 := `{"baz_bool":true,"baz_float32":1.234,"baz_float64":9.876,"baz_int":-12345,"baz_int16":-16,"baz_int32":-32,"baz_int64":-64,"baz_int8":-8,"baz_string":"test 1","baz_uint":12345,"baz_uint16":16,"baz_uint32":32,"baz_uint64":64,"baz_uint8":8}` + "\n"
 
 	AfterEach(func() {
 		os.Remove("./test/output-Foo-sequential.jsonl")
 		os.Remove("./test/output-Bar-sequential.jsonl")
+		os.Remove("./test/output-Baz-sequential.jsonl")
 		os.Remove("./test/output-Foo-interleave.jsonl")
 		os.Remove("./test/output-Bar-interleave.jsonl")
+		os.Remove("./test/output-Baz-interleave.jsonl")
 	})
 
 	It("should write the correct data when sequential structs are written", func() {
@@ -44,6 +48,11 @@ var _ = Describe("JSONLWriter", func() {
 		output2, err := ioutil.ReadFile("./test/output-Bar-sequential.jsonl")
 		Expect(err).To(BeNil())
 		Expect(string(output2)).To(Equal(expectedOutput2))
+
+		output3, err := ioutil.ReadFile("./test/output-Baz-sequential.jsonl")
+		Expect(err).To(BeNil())
+		// fmt.Println(string(output3))
+		Expect(string(output3)).To(Equal(expectedOutput3))
 	})
 
 	It("should write the correct data when interleaved structs are written", func() {
@@ -58,6 +67,11 @@ var _ = Describe("JSONLWriter", func() {
 		output2, err := ioutil.ReadFile("./test/output-Bar-interleave.jsonl")
 		Expect(err).To(BeNil())
 		Expect(string(output2)).To(Equal(expectedOutput2))
+
+		output3, err := ioutil.ReadFile("./test/output-Baz-interleave.jsonl")
+		Expect(err).To(BeNil())
+		// fmt.Println(string(output3))
+		Expect(string(output3)).To(Equal(expectedOutput3))
 	})
 
 	It("should not write anything when structs are written and cancel is called", func() {
