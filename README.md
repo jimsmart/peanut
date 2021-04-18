@@ -54,6 +54,24 @@ Use the package within your code:
 import "github.com/jimsmart/peanut"
 ```
 
+### Usage
+
+Writers in peanut all implement the following interface:
+
+```go
+type Writer interface {
+    Write(r interface{}) error
+    Close() error
+    Cancel() error
+}
+```
+
+1. Tag some structs.
+2. Construct a writer.
+3. Collect and assign data into tagged structs.
+4. Use `Write()` to write records.
+5. Call `Close()` or `Cancel()` when done.
+
 ### Example Code
 
 See GoDocs.
