@@ -45,7 +45,7 @@ var testOutputBar = []*Bar{
 	{IntField: 3, StringField: "test 3"},
 }
 
-var testOutputBaz = []*Baz{
+var testOutputBaz = []Baz{
 	{
 		StringField:  "test 1",
 		BoolField:    true,

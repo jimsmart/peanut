@@ -13,8 +13,8 @@
 // All writers have the same basic interface: a Write method,
 // that can take any appropriately tagged struct; a Close method,
 // which should be called to successfully complete writing; and
-// a Cancel method, which should be called to clean-up in the event
-// of an error or cancellation during writing.
+// a Cancel method, which should be called (instead of Close)
+// to clean-up in the event of an error or cancellation during writing.
 //
 // Struct Tagging
 //
