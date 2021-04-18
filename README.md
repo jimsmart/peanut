@@ -57,7 +57,7 @@ import "github.com/jimsmart/peanut"
 
 ### API
 
-Writers in peanut all implement this interface:
+Writers in peanut implement this interface:
 
 ```go
 type Writer interface {
