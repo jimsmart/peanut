@@ -94,5 +94,3 @@
 //
 // Pointer following and nested structs are currently unsupported.
 package peanut
-
-//
