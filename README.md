@@ -54,7 +54,7 @@ Use the package within your code:
 import "github.com/jimsmart/peanut"
 ```
 
-### Usage
+### API
 
 Writers in peanut all implement the following interface:
 
@@ -66,11 +66,14 @@ type Writer interface {
 }
 ```
 
+### Usage
+
 1. Tag some structs.
 2. Initialise a `peanut.Writer` to use.
 3. Collect and assign data into tagged structs.
 4. Use `Write()` to write records.
-5. Call `Close()` or `Cancel()` when done.
+5. Repeat until done.
+6. Call `Close()` or `Cancel()` to finish.
 
 ### Example Code
 
