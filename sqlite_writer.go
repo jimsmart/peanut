@@ -165,6 +165,8 @@ func (w *SQLiteWriter) createDDL(t reflect.Type) string {
 		case reflect.Uint, reflect.Uint64:
 			col += "UNSIGNED INT64"
 		default:
+			// TODO(js) This should show the type name for the owning struct,
+			// the name of the field, and the bad type. IDK what it shows currently.
 			m := fmt.Sprintf("Unknown type: %v", t.Name())
 			panic(m)
 		}

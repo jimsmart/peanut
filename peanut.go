@@ -19,42 +19,6 @@ type Writer interface {
 
 const tagName = "peanut"
 
-func stringValues(x interface{}) []string {
-	var out []string
-	reflectStructValues(x, func(name string, t reflect.Type, v interface{}, tag string) {
-		switch t.Kind() {
-		case reflect.String, reflect.Bool, reflect.Float32, reflect.Float64,
-			reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			// Allowed type: append stringified value to list.
-			out = append(out, fmt.Sprintf("%v", v))
-		default:
-			m := fmt.Sprintf("Unknown type: %v", v) // TODO(js) This would be clearer if it used t.Name() ?
-			panic(m)
-		}
-	})
-	return out
-}
-
-func mapValues(x interface{}) map[string]interface{} {
-	out := make(map[string]interface{})
-	// TODO(js) Can we refactor reflect-type->value out, to reduce cyclomatic complexity?
-	reflectStructValues(x, func(name string, t reflect.Type, v interface{}, tag string) {
-		tag = firstTagValue(tag)
-		switch t.Kind() {
-		case reflect.String, reflect.Bool, reflect.Float32, reflect.Float64,
-			reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			// Allowed type: put value into map.
-			out[tag] = v
-		default:
-			m := fmt.Sprintf("Unknown type: %v", v)
-			panic(m)
-		}
-	})
-	return out
-}
-
 func reflectStructFields(x interface{}, fn func(name string, t reflect.Type, tag string)) {
 
 	// TODO(js) This should work with Ptr and non-Ptr.
@@ -75,7 +39,14 @@ func reflectStructFields(x interface{}, fn func(name string, t reflect.Type, tag
 
 		// Only process fields with appropriate tags.
 		if tag != "" {
-			fn(field.Name, field.Type, tag)
+			name := field.Name
+			// Filter out unexported fields.
+			r, _ := utf8.DecodeRuneInString(name)
+			if !unicode.IsUpper(r) {
+				continue
+			}
+
+			fn(name, field.Type, tag)
 		}
 
 		// fmt.Printf("%d. %v (%v), tag: '%v'\n", i+1, field.Name, field.Type.Name(), tag)
@@ -114,6 +85,20 @@ func reflectStructValues(x interface{}, fn func(name string, t reflect.Type, v i
 			if !unicode.IsUpper(r) {
 				continue
 			}
+
+			switch field.Type.Kind() {
+			case reflect.String, reflect.Bool, reflect.Float32, reflect.Float64,
+				reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+				reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+				// Allowed/supported type.
+				break
+			default:
+				// TODO(js) This should also show the type name for the owning struct,
+				// and the name of the field.
+				m := fmt.Sprintf("Unknown type: %s", field.Type.Name())
+				panic(m)
+			}
+
 			val := t.Field(i).Interface()
 
 			fn(name, field.Type, val, tag)
@@ -121,6 +106,25 @@ func reflectStructValues(x interface{}, fn func(name string, t reflect.Type, v i
 
 		// fmt.Printf("Field Name: %s,\t Field Value: %v,\t Tag Value: %s\n", field.Name, val, tag)
 	}
+}
+
+func stringValues(x interface{}) []string {
+	var out []string
+	reflectStructValues(x, func(name string, t reflect.Type, v interface{}, tag string) {
+		// Append stringified value to list.
+		out = append(out, fmt.Sprintf("%v", v))
+	})
+	return out
+}
+
+func mapValues(x interface{}) map[string]interface{} {
+	out := make(map[string]interface{})
+	reflectStructValues(x, func(name string, t reflect.Type, v interface{}, tag string) {
+		tag = firstTagValue(tag)
+		// Put value into map.
+		out[tag] = v
+	})
+	return out
 }
 
 func firstTagValue(s string) string {
