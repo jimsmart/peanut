@@ -135,6 +135,7 @@ func (w *SQLiteWriter) createDDL(t reflect.Type) string {
 	tags := w.tagsByType[t]
 
 	for i := 0; i < len(typs); i++ {
+		// TODO(js) We should quote this appropriately, to handle reserved words.
 		// Column name.
 		col := "\t" + hdrs[i] + " "
 
