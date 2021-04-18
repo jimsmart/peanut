@@ -38,7 +38,7 @@ jobs:
     
     # Run tests
     - name: Run tests
-      run: go test -v -race -coverprofile=coverage.txt -covermode=atomic
+      run: go test -race -coverprofile=coverage.txt -covermode=atomic
 
     # Upload coverage report to Codecov
     - name: Report to Codecov
