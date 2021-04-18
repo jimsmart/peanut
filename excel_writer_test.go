@@ -90,6 +90,16 @@ var _ = Describe("ExcelWriter", func() {
 		Expect("./test/output-Bar-cancel.xlsx").ToNot(BeAnExistingFile())
 	})
 
+	It("should return an error when the path is bad", func() {
+		w := peanut.NewExcelWriter("./no-such-location/output-bogus-", "")
+
+		err := w.Write(testOutputFoo[0])
+		Expect(err).To(BeNil())
+
+		err = w.Close()
+		Expect(err).ToNot(BeNil())
+	})
+
 })
 
 func readExcel(filename string) ([][]string, error) {

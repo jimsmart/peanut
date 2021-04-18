@@ -84,4 +84,14 @@ var _ = Describe("CSVWriter", func() {
 		Expect("./test/output-Bar-cancel.csv").ToNot(BeAnExistingFile())
 	})
 
+	It("should return an error when the path is bad", func() {
+		w := peanut.NewCSVWriter("./no-such-location/output-bogus-", "")
+
+		err := w.Write(testOutputFoo[0])
+		Expect(err).To(BeNil())
+
+		err = w.Close()
+		Expect(err).ToNot(BeNil())
+	})
+
 })

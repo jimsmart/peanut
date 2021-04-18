@@ -92,6 +92,16 @@ var _ = Describe("SQLiteWriter", func() {
 		Expect("./test/output-cancel.sqlite").ToNot(BeAnExistingFile())
 	})
 
+	It("should return an error when the path is bad", func() {
+		w := peanut.NewSQLiteWriter("./no-such-location/output-bogus")
+
+		err := w.Write(testOutputFoo[0])
+		Expect(err).To(BeNil())
+
+		err = w.Close()
+		Expect(err).ToNot(BeNil())
+	})
+
 })
 
 func readSQLite(filename string) (map[string]*tableResults, error) {

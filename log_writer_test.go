@@ -2,7 +2,10 @@ package peanut_test
 
 import (
 	"bytes"
+	"io/ioutil"
 	"log"
+	"os"
+	"strings"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -70,6 +73,42 @@ var _ = Describe("LogWriter", func() {
 
 		output := string(buf.Bytes())
 		Expect(output).To(Equal(expectedOutput))
+	})
+
+	It("should not return any errors when used with its default config", func() {
+		w := &peanut.LogWriter{}
+
+		// Temporarily replace Stderr, to capture log output.
+		// See https://stackoverflow.com/questions/25609734/testing-stdout-with-go-and-ginkgo
+		pr, pw, _ := os.Pipe()
+		tmp := os.Stderr
+		defer func() {
+			os.Stderr = tmp
+		}()
+		os.Stderr = pw
+		go func() {
+			// Run our tests.
+			testWritesAndCloseSequential(w)
+			pw.Close()
+		}()
+		stdout, _ := ioutil.ReadAll(pr)
+
+		// Output looks like:
+		// 2021/04/18 20:35:43 <Foo> foo_string: test 1 foo_int: 1
+		// 2021/04/18 20:35:43 <Foo> foo_string: test 2 foo_int: 2
+		// 2021/04/18 20:35:43 <Foo> foo_string: test 3 foo_int: 3
+		// 2021/04/18 20:35:43 <Bar> bar_int: 1 bar_string: test 1
+		// 2021/04/18 20:35:43 <Bar> bar_int: 2 bar_string: test 2
+		// 2021/04/18 20:35:43 <Bar> bar_int: 3 bar_string: test 3
+		// 2021/04/18 20:35:43 <Baz> baz_string: test 1 baz_bool: true baz_float32: 1.234 baz_float64: 9.876 baz_int: -12345 baz_int8: -8 baz_int16: -16 baz_int32: -32 baz_int64: -64 baz_uint: 12345 baz_uint8: 8 baz_uint16: 16 baz_uint32: 32 baz_uint64: 64"
+
+		lines := strings.Split(string(stdout), "\n")
+		for _, x := range lines {
+			// fmt.Println(x)
+			if len(x) > 0 {
+				Expect(x).To(MatchRegexp(`^\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2} <[A-Z][a-z]*> [a-z]`))
+			}
+		}
 	})
 
 })
