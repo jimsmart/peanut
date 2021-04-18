@@ -12,6 +12,12 @@ peanut is a [Go](https://golang.org/) package to write tagged data structs in a 
 Its primary purpose is to provide a single consistent interface
 for easy, ceremony-free persistence of record-based struct data.
 
+Each distinct struct type is written to an individual file (or table), each named according to the name of the struct. Field/column names in each file/table are derived from struct tags. All writers use the same tags.
+
+Currently supported formats are CSV, TSV, Excel (.xlsx), JSON Lines (JSONL), and SQLite.
+Additional writers are also provided to assist with testing and debugging.
+Mutiple writers can be combined using MultiWriter.
+
 ## About
 
 TODO
