@@ -139,6 +139,7 @@ func (w *SQLiteWriter) createDDL(t reflect.Type) string {
 		// Column name.
 		col := "\t" + hdrs[i] + " "
 
+		// TODO(js) Refactor reflect-type->db-type out, to reduce cyclomatic complexity.
 		// Column datatype.
 		switch typs[i].Kind() {
 		case reflect.String:

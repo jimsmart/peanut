@@ -3,7 +3,6 @@ package peanut
 import (
 	"fmt"
 	"reflect"
-	"strconv"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -24,32 +23,11 @@ func stringValues(x interface{}) []string {
 	var out []string
 	reflectStructValues(x, func(name string, t reflect.Type, v interface{}, tag string) {
 		switch t.Kind() {
-		case reflect.String:
-			out = append(out, v.(string))
-		case reflect.Int:
-			out = append(out, strconv.FormatInt(int64(v.(int)), 10))
-		case reflect.Bool:
-			out = append(out, strconv.FormatBool(v.(bool)))
-		case reflect.Float64, reflect.Float32:
-			out = append(out, fmt.Sprint(v.(float64))) // TODO(js) This seems lazy.
-		case reflect.Int8:
-			out = append(out, strconv.FormatInt(int64(v.(int8)), 10))
-		case reflect.Int16:
-			out = append(out, strconv.FormatInt(int64(v.(int16)), 10))
-		case reflect.Int32:
-			out = append(out, strconv.FormatInt(int64(v.(int32)), 10))
-		case reflect.Int64:
-			out = append(out, strconv.FormatInt(v.(int64), 10))
-		case reflect.Uint:
-			out = append(out, strconv.FormatUint(uint64(v.(uint)), 10))
-		case reflect.Uint8:
-			out = append(out, strconv.FormatUint(uint64(v.(uint8)), 10))
-		case reflect.Uint16:
-			out = append(out, strconv.FormatUint(uint64(v.(uint16)), 10))
-		case reflect.Uint32:
-			out = append(out, strconv.FormatUint(uint64(v.(uint32)), 10))
-		case reflect.Uint64:
-			out = append(out, strconv.FormatUint(v.(uint64), 10))
+		case reflect.String, reflect.Bool, reflect.Float32, reflect.Float64,
+			reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			// Allowed type: append stringified value to list.
+			out = append(out, fmt.Sprintf("%v", v))
 		default:
 			m := fmt.Sprintf("Unknown type: %v", v) // TODO(js) This would be clearer if it used t.Name() ?
 			panic(m)
@@ -60,37 +38,15 @@ func stringValues(x interface{}) []string {
 
 func mapValues(x interface{}) map[string]interface{} {
 	out := make(map[string]interface{})
+	// TODO(js) Can we refactor reflect-type->value out, to reduce cyclomatic complexity?
 	reflectStructValues(x, func(name string, t reflect.Type, v interface{}, tag string) {
 		tag = firstTagValue(tag)
 		switch t.Kind() {
-		case reflect.String:
-			out[tag] = v.(string)
-		case reflect.Int:
-			out[tag] = v.(int)
-		case reflect.Bool:
-			out[tag] = v.(bool)
-		case reflect.Float64:
-			out[tag] = v.(float64)
-		case reflect.Float32:
-			out[tag] = v.(float32)
-		case reflect.Int8:
-			out[tag] = v.(int8)
-		case reflect.Int16:
-			out[tag] = v.(int16)
-		case reflect.Int32:
-			out[tag] = v.(int32)
-		case reflect.Int64:
-			out[tag] = v.(int64)
-		case reflect.Uint8:
-			out[tag] = v.(uint8)
-		case reflect.Uint16:
-			out[tag] = v.(uint16)
-		case reflect.Uint32:
-			out[tag] = v.(uint32)
-		case reflect.Uint64:
-			out[tag] = v.(uint64)
-		case reflect.Uint:
-			out[tag] = v.(uint)
+		case reflect.String, reflect.Bool, reflect.Float32, reflect.Float64,
+			reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			// Allowed type: put value into map.
+			out[tag] = v
 		default:
 			m := fmt.Sprintf("Unknown type: %v", v)
 			panic(m)
