@@ -17,6 +17,11 @@
 // a Cancel method, which should be called (instead of Close)
 // to clean-up in the event of an error or cancellation during writing.
 //
+// All writers output their files atomically — that is to say:
+// all output is written to a temporary location and only moved to the
+// final output location when Close is called, meaning the output
+// folder never contains any partially written files.
+//
 // Struct Tagging
 //
 // Structs to be used with peanut must have appropriately tagged
@@ -93,4 +98,7 @@
 // int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64.
 //
 // Pointer following and nested structs are currently unsupported.
+//
+// Tagging a field that has an unsupported datatype will result in a
+// panic when Write is called.
 package peanut

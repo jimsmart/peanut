@@ -18,9 +18,25 @@ Currently supported formats are CSV, TSV, Excel (.xlsx), JSON Lines (JSONL), and
 Additional writers are also provided to assist with testing and debugging.
 Mutiple writers can be combined using MultiWriter.
 
+All writers use atomic file operations, writing data to a temporary location and moving
+it to the final output location when Close is called.
+
 ## About
 
-TODO
+When building an app or tool that needs to output data constisting of
+multiple different record types, perhaps with requirements that change over time
+(whether during development or after initial deployment),
+perhaps requiring multiple output formats (during development/testing,
+or as final output) — is where peanut might be 'the right tool for the job'.
+
+Ideal for use an output solution for, e.g. data conversion tools,
+part of an ETL pipeline, data-acquistion tools/apps, web-scrapers,
+structured logging, persistence of captured data/metadata/events, etc.
+Whether building an ad-hoc tool as a quick hack, or as part of a bigger,
+more serious project.
+
+peanut initially evolved as part of a larger closed-source project,
+is tried and tested, and production-ready.
 
 ## Quickstart
 
