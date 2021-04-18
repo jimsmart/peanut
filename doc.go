@@ -43,7 +43,7 @@
 // Usage
 //
 // First create a writer, for example:
-//  w := peanut.NewCSVWriter("/some/path/my-data-", "")
+//  w := peanut.NewCSVWriter("/some/path/my-", "-data")
 //
 // Next, write some records to it:
 // 	x := &Shape{
@@ -74,8 +74,8 @@
 //  err = w.Close()
 //
 //  // Output files will be:
-//  // /some/path/my-data-Shape.csv
-//  // /some/path/my-data-Color.csv
+//  // /some/path/my-Shape-data.csv
+//  // /some/path/my-Color-data.csv
 //
 // Or, to abort the whole operation in the event of an error or cancellation while writing records:
 //  err = w.Cancel()
@@ -83,8 +83,8 @@
 // MultiWriter
 //
 // Multiple writers can be combined using MultiWriter:
-//  w1 := peanut.NewCSVWriter("/some/path/my-data-", "")
-//  w2 := peanut.NewExcelWriter("/some/path/my-data-", "")
+//  w1 := peanut.NewCSVWriter("/some/path/my-", "-data")
+//  w2 := peanut.NewExcelWriter("/some/path/my-", "-data")
 //  w3 := &peanut.LogWriter{}
 //  w := peanut.MultiWriter(w1, w2, w3)
 // Here w will write records to CSV files, Excel files, and a logger.
