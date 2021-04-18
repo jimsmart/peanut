@@ -18,7 +18,7 @@ Currently supported formats are CSV, TSV, Excel (.xlsx), JSON Lines (JSONL), and
 Additional writers are also provided to assist with testing and debugging.
 Mutiple writers can be combined using MultiWriter.
 
-All writers use atomic file operations, writing data to a temporary location and moving
+All writers perform atomic file operations, writing data to a temporary location and moving
 it to the final output location when Close is called.
 
 ## About
