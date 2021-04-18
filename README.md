@@ -23,9 +23,9 @@ it to the final output location when Close is called.
 
 ## About
 
-When building an app or tool that needs to output data constisting of
-multiple different record types, perhaps with requirements that change over time
-(whether during development or after initial deployment),
+When building an app or tool that needs to output data consisting of
+multiple different record types to disk, perhaps with requirements that
+change over time (whether during development or after initial deployment),
 perhaps requiring multiple output formats (during development/testing,
 or as final output) — is where peanut might be 'the right tool for the job'.
 
