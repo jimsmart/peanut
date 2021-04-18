@@ -29,7 +29,7 @@ multiple different record types, perhaps with requirements that change over time
 perhaps requiring multiple output formats (during development/testing,
 or as final output) — is where peanut might be 'the right tool for the job'.
 
-Ideal for use an output solution for, e.g. data conversion tools,
+Ideal for use as an output solution for, e.g. data conversion tools,
 part of an ETL pipeline, data-acquistion tools/apps, web-scrapers,
 structured logging, persistence of captured data/metadata/events, etc.
 Whether building an ad-hoc tool as a quick hack, or as part of a bigger,
