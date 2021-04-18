@@ -30,8 +30,9 @@ perhaps requiring multiple output formats (during development/testing,
 or as final output) — is where peanut might be 'the right tool for the job'.
 
 Ideal for use as an output solution for, e.g. data conversion tools,
-part of an ETL pipeline, data-acquistion tools/apps, web-scrapers,
-structured logging, persistence of captured data/metadata/events, etc.
+part of an ETL pipeline, data-acquistion or extraction tools/apps, web-scrapers,
+structured logging, persistence of captured data/metadata/events,
+job reporting, etc.
 Whether building an ad-hoc tool as a quick hack, or as part of a bigger,
 more serious project.
 
@@ -71,9 +72,8 @@ type Writer interface {
 1. Tag some structs.
 2. Initialise a `peanut.Writer` to use.
 3. Collect and assign data into tagged structs.
-4. Use `Write()` to write records.
-5. Repeat until done.
-6. Call `Close()` or `Cancel()` to finish.
+4. Use `Write()` to write records, repeating until done.
+5. Call `Close()` or `Cancel()` to finish.
 
 ### Example Code
 
