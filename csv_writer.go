@@ -128,6 +128,7 @@ func (w *CSVWriter) Close() error {
 	if w.closed {
 		return nil
 	}
+	w.closed = true
 	var rerr error
 	for _, c := range w.builderByType {
 		var cerr error
@@ -173,7 +174,6 @@ func (w *CSVWriter) Close() error {
 			rerr = cerr
 		}
 	}
-	w.closed = true
 	return rerr
 }
 
@@ -183,6 +183,7 @@ func (w *CSVWriter) Cancel() error {
 	if w.closed {
 		return nil
 	}
+	w.closed = true
 	var rerr error
 	for _, c := range w.builderByType {
 		var err error
@@ -197,6 +198,5 @@ func (w *CSVWriter) Cancel() error {
 			rerr = err
 		}
 	}
-	w.closed = true
 	return rerr
 }

@@ -108,6 +108,7 @@ func (w *JSONLWriter) Close() error {
 	if w.closed {
 		return nil
 	}
+	w.closed = true
 
 	var rerr error
 	for _, c := range w.builderByType {
@@ -153,7 +154,6 @@ func (w *JSONLWriter) Close() error {
 			rerr = cerr
 		}
 	}
-	w.closed = true
 	return rerr
 }
 
@@ -163,6 +163,7 @@ func (w *JSONLWriter) Cancel() error {
 	if w.closed {
 		return nil
 	}
+	w.closed = true
 
 	var rerr error
 	for _, c := range w.builderByType {
@@ -178,6 +179,5 @@ func (w *JSONLWriter) Cancel() error {
 			rerr = err
 		}
 	}
-	w.closed = true
 	return rerr
 }

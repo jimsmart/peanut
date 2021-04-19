@@ -234,6 +234,10 @@ func (w *SQLiteWriter) Close() error {
 	if w.closed {
 		return nil
 	}
+	w.closed = true
+	if w.db == nil {
+		return nil
+	}
 
 	var rerr error
 
@@ -244,21 +248,15 @@ func (w *SQLiteWriter) Close() error {
 		rerr = err
 	}
 
-	if w.db != nil {
-		err = os.Rename(w.tmpFilename, w.dstFilename)
-		if err != nil {
-			rerr = err
-		}
+	err = os.Rename(w.tmpFilename, w.dstFilename)
+	if err != nil {
+		rerr = err
 	}
 
-	w.closed = true
 	return rerr
 }
 
 func (w *SQLiteWriter) close() error {
-	if w.db == nil {
-		return nil
-	}
 	var rerr error
 
 	// TODO(js) We should make lists of errors.
@@ -292,6 +290,10 @@ func (w *SQLiteWriter) Cancel() error {
 	if w.closed {
 		return nil
 	}
+	w.closed = true
+	if w.db == nil {
+		return nil
+	}
 
 	var rerr error
 
@@ -306,6 +308,5 @@ func (w *SQLiteWriter) Cancel() error {
 		}
 	}
 
-	w.closed = true
 	return rerr
 }

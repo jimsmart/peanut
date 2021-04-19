@@ -102,6 +102,7 @@ func (w *ExcelWriter) Close() error {
 	if w.closed {
 		return nil
 	}
+	w.closed = true
 	var rerr error
 	for _, excel := range w.builderByType {
 		err := excel.Save()
@@ -109,7 +110,6 @@ func (w *ExcelWriter) Close() error {
 			rerr = err
 		}
 	}
-	w.closed = true
 	return rerr
 }
 
