@@ -116,6 +116,9 @@ func (w *CSVWriter) Write(x interface{}) error {
 // Close flushes all buffers and writers,
 // and closes the output files.
 func (w *CSVWriter) Close() error {
+	if w.closed {
+		return nil
+	}
 	var rerr error
 	for _, c := range w.builderByType {
 		var cerr error
@@ -161,12 +164,16 @@ func (w *CSVWriter) Close() error {
 			rerr = cerr
 		}
 	}
+	w.closed = true
 	return rerr
 }
 
 // Cancel should be called in the event of an error occurring,
 // to properly close and delete any partially written files.
 func (w *CSVWriter) Cancel() error {
+	if w.closed {
+		return nil
+	}
 	var rerr error
 	for _, c := range w.builderByType {
 		var err error
@@ -181,5 +188,6 @@ func (w *CSVWriter) Cancel() error {
 			rerr = err
 		}
 	}
+	w.closed = true
 	return rerr
 }

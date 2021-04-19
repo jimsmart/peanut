@@ -63,7 +63,7 @@ var _ = Describe("MockWriter", func() {
 
 		Expect(w.CalledWrite).To(Equal(7))
 		Expect(w.CalledClose).To(Equal(1))
-		Expect(w.CalledCancel).To(Equal(0))
+		Expect(w.CalledCancel).To(Equal(1))
 	})
 
 	It("should capture the correct headers and data when interleaved structs are written", func() {
@@ -84,8 +84,8 @@ var _ = Describe("MockWriter", func() {
 
 		testWritesAndCancel(w)
 
-		Expect(w.CalledClose).To(Equal(0))
 		Expect(w.CalledCancel).To(Equal(1))
+		Expect(w.CalledClose).To(Equal(1))
 	})
 
 	It("should capture the correct headers and data when DisableDataCapture is used", func() {
@@ -102,7 +102,7 @@ var _ = Describe("MockWriter", func() {
 
 		Expect(w.CalledWrite).To(Equal(7))
 		Expect(w.CalledClose).To(Equal(1))
-		Expect(w.CalledCancel).To(Equal(0))
+		Expect(w.CalledCancel).To(Equal(1))
 	})
 
 	Context("when given a struct with an unsupported field type", func() {

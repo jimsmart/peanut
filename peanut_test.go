@@ -84,6 +84,10 @@ func testWritesAndCloseSequential(w peanut.Writer) {
 	}
 	err = w.Close()
 	Expect(err).To(BeNil())
+
+	// Calling Cancel after Close should be a no-op.
+	err = w.Cancel()
+	Expect(err).To(BeNil())
 }
 
 func testWritesAndCloseInterleaved(w peanut.Writer) {
@@ -109,5 +113,9 @@ func testWritesAndCancel(w peanut.Writer) {
 	err = w.Write(testOutputBar[0])
 	Expect(err).To(BeNil())
 	err = w.Cancel()
+	Expect(err).To(BeNil())
+
+	// Calling Close after Cancel should be a no-op.
+	err = w.Close()
 	Expect(err).To(BeNil())
 }

@@ -222,6 +222,10 @@ func (w *SQLiteWriter) Write(x interface{}) error {
 // closes the database connection,
 // and moves the database to its final location.
 func (w *SQLiteWriter) Close() error {
+	if w.closed {
+		return nil
+	}
+
 	var rerr error
 
 	// TODO(js) We should make lists of errors.
@@ -236,6 +240,7 @@ func (w *SQLiteWriter) Close() error {
 		rerr = err
 	}
 
+	w.closed = true
 	return rerr
 }
 
@@ -270,6 +275,10 @@ func (w *SQLiteWriter) close() error {
 // to properly close any used resources,
 // and delete the partially written database from its temporary location.
 func (w *SQLiteWriter) Cancel() error {
+	if w.closed {
+		return nil
+	}
+
 	var rerr error
 
 	// TODO(js) We should make lists of errors.
@@ -281,5 +290,6 @@ func (w *SQLiteWriter) Cancel() error {
 		rerr = err
 	}
 
+	w.closed = true
 	return rerr
 }

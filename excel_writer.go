@@ -91,6 +91,9 @@ func (w *ExcelWriter) Write(x interface{}) error {
 
 // Close the writer, ensuring all files are saved.
 func (w *ExcelWriter) Close() error {
+	if w.closed {
+		return nil
+	}
 	var rerr error
 	for _, excel := range w.builderByType {
 		err := excel.Save()
@@ -98,12 +101,14 @@ func (w *ExcelWriter) Close() error {
 			rerr = err
 		}
 	}
+	w.closed = true
 	return rerr
 }
 
 // Cancel should be called in the event of an error occurring.
 func (w *ExcelWriter) Cancel() error {
 	// No clean up needed.
+	w.closed = true
 	return nil
 }
 

@@ -96,6 +96,9 @@ func (w *JSONLWriter) Write(x interface{}) error {
 // Close flushes all buffers and writers,
 // and closes the output files.
 func (w *JSONLWriter) Close() error {
+	if w.closed {
+		return nil
+	}
 
 	var rerr error
 	for _, c := range w.builderByType {
@@ -141,15 +144,16 @@ func (w *JSONLWriter) Close() error {
 			rerr = cerr
 		}
 	}
+	w.closed = true
 	return rerr
 }
 
 // Cancel should be called in the event of an error occurring,
 // to properly close and delete any partially written files.
 func (w *JSONLWriter) Cancel() error {
-
-	// TODO
-	// panic("unimplemented")
+	if w.closed {
+		return nil
+	}
 
 	var rerr error
 	for _, c := range w.builderByType {
@@ -165,5 +169,6 @@ func (w *JSONLWriter) Cancel() error {
 			rerr = err
 		}
 	}
+	w.closed = true
 	return rerr
 }

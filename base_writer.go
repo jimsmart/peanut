@@ -8,6 +8,7 @@ type base struct {
 	headersByType map[reflect.Type][]string       // headersByType is a list of headers for each struct type.
 	typesByType   map[reflect.Type][]reflect.Type // typesByType is a list of reflected field types for each struct type.
 	tagsByType    map[reflect.Type][]string       // tagsByType is a list of field tags for each struct type.
+	closed        bool
 }
 
 // register a type and collect its metadata.
