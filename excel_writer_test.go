@@ -100,6 +100,32 @@ var _ = Describe("ExcelWriter", func() {
 		Expect(err).ToNot(BeNil())
 	})
 
+	Context("when given a struct with an unsupported field type", func() {
+
+		It("should panic with an appropriate message", func() {
+			w := peanut.NewExcelWriter("./no-such-location/output-bogus-", "")
+
+			// err := w.Write(&BadField{})
+			// Expect(err).To(BeNil())
+
+			fn := func() {
+				w.Write(BadUnsupported{})
+			}
+
+			// Expect panic message to be informative.
+			Expect(fn).To(PanicWith(SatisfyAll(
+				MatchRegexp(`slice`),          // type
+				MatchRegexp("BytesField"),     // field name
+				MatchRegexp("BadUnsupported"), // struct name
+			)))
+
+			// Expect(err).To(BeNil())
+
+			// err = w.Close()
+			// Expect(err).ToNot(BeNil())
+		})
+	})
+
 })
 
 func readExcel(filename string) ([][]string, error) {

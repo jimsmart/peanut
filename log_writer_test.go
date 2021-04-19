@@ -111,4 +111,30 @@ var _ = Describe("LogWriter", func() {
 		}
 	})
 
+	Context("when given a struct with an unsupported field type", func() {
+
+		It("should panic with an appropriate message", func() {
+			w := peanut.LogWriter{}
+
+			// err := w.Write(&BadField{})
+			// Expect(err).To(BeNil())
+
+			fn := func() {
+				w.Write(BadUnsupported{})
+			}
+
+			// Expect panic message to be informative.
+			Expect(fn).To(PanicWith(SatisfyAll(
+				MatchRegexp(`slice`),          // type
+				MatchRegexp("BytesField"),     // field name
+				MatchRegexp("BadUnsupported"), // struct name
+			)))
+
+			// Expect(err).To(BeNil())
+
+			// err = w.Close()
+			// Expect(err).ToNot(BeNil())
+		})
+	})
+
 })

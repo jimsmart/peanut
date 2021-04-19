@@ -138,7 +138,7 @@ var kindToDBType = map[reflect.Kind]string{
 
 func (w *SQLiteWriter) createDDL(t reflect.Type) string {
 
-	// Create table using type name.
+	// Create table using type name - quoted.
 	ddl := "CREATE TABLE \"" + t.Name() + "\" (\n"
 
 	// List of DDL statements to build the table definition.
@@ -151,12 +151,13 @@ func (w *SQLiteWriter) createDDL(t reflect.Type) string {
 	tags := w.tagsByType[t]
 
 	for i := 0; i < len(typs); i++ {
-		// TODO(js) We should quote this appropriately, to handle reserved words.
-		// Column name.
+		// Column name - quoted.
 		col := "\t\"" + hdrs[i] + "\" "
 
 		// Column datatype.
 		col += kindToDBType[typs[i].Kind()]
+		// We ensure kindToDBType has necessary entries using a test,
+		// so no need to check for missing entries here.
 
 		// Column constraints.
 		col += " NOT NULL"
@@ -187,7 +188,7 @@ func (w *SQLiteWriter) createDDL(t reflect.Type) string {
 }
 
 func (w *SQLiteWriter) createInsert(t reflect.Type) string {
-	// TODO Add an option to allow different insert modes (default/ignore/update).
+	// TODO(js) Add an option to allow different insert modes (default/ignore/update).
 	s := "INSERT OR IGNORE INTO \"" + t.Name() + "\" ("
 	hdrs := w.headersByType[t]
 	s += strings.Join(hdrs, ",")

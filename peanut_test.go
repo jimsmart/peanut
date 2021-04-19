@@ -33,6 +33,10 @@ type Baz struct {
 	IgnoredField int     // No tag.
 }
 
+type BadUnsupported struct {
+	BytesField []byte `peanut:"bytes_field"`
+}
+
 var testOutputFoo = []*Foo{
 	{StringField: "test 1", IntField: 1},
 	{StringField: "test 2", IntField: 2},
