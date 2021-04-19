@@ -99,4 +99,5 @@ Package peanut is copyright 2020-2021 by Jim Smart and released under the [BSD 3
 
 ## History
 
+- v1.0.2 (2021-04-19) Fixup handling of uints.
 - v1.0.1 (2021-04-19) Repository made public.
