@@ -1,6 +1,6 @@
 # peanut
 
-[![BSD3](https://img.shields.io/badge/license-BSD3-blue.svg)](LICENSE)
+[![BSD3](https://img.shields.io/badge/license-BSD3-blue.svg)](LICENSE.md)
 [![Build Status](https://github.com/jimsmart/peanut/actions/workflows/main.yml/badge.svg)](https://github.com/jimsmart/peanut/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/jimsmart/peanut/branch/master/graph/badge.svg)](https://codecov.io/gh/jimsmart/peanut)
 [![Go Report Card](https://goreportcard.com/badge/github.com/jimsmart/peanut?cache-buster)](https://goreportcard.com/report/github.com/jimsmart/peanut)
