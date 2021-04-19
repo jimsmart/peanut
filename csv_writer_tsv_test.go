@@ -34,9 +34,11 @@ var _ = Describe("TSVWriter", func() {
 		os.Remove("./test/output-Foo-sequential.tsv")
 		os.Remove("./test/output-Bar-sequential.tsv")
 		os.Remove("./test/output-Baz-sequential.tsv")
+		os.Remove("./test/output-Qux-sequential.tsv")
 		os.Remove("./test/output-Foo-interleave.tsv")
 		os.Remove("./test/output-Bar-interleave.tsv")
 		os.Remove("./test/output-Baz-interleave.tsv")
+		os.Remove("./test/output-Qux-interleave.tsv")
 	})
 
 	It("should write the correct data when sequential structs are written", func() {
@@ -55,6 +57,8 @@ var _ = Describe("TSVWriter", func() {
 		output3, err := ioutil.ReadFile("./test/output-Baz-sequential.tsv")
 		Expect(err).To(BeNil())
 		Expect(string(output3)).To(Equal(expectedOutput3))
+
+		Expect("./test/output-Qux-sequential.tsv").ToNot(BeAnExistingFile())
 	})
 
 	It("should write the correct data when interleaved structs are written", func() {
@@ -73,6 +77,8 @@ var _ = Describe("TSVWriter", func() {
 		output3, err := ioutil.ReadFile("./test/output-Baz-interleave.tsv")
 		Expect(err).To(BeNil())
 		Expect(string(output3)).To(Equal(expectedOutput3))
+
+		Expect("./test/output-Qux-interleave.tsv").ToNot(BeAnExistingFile())
 	})
 
 	It("should not write anything when structs are written and cancel is called", func() {
@@ -106,22 +112,9 @@ var _ = Describe("TSVWriter", func() {
 
 		It("should return an error with an informative message", func() {
 			w := peanut.NewTSVWriter("./no-such-location/output-bogus-", "")
-			defer func() {
-				err1 := w.Cancel()
-				err2 := w.Close()
-				Expect(err1).To(BeNil())
-				Expect(err2).To(BeNil())
-			}()
 
-			err := w.Write(BadUnsupported{})
-			Expect(err).ToNot(BeNil())
-
-			// Expect error message to be informative.
-			Expect(err.Error()).To(SatisfyAll(
-				MatchRegexp(`slice`),          // type
-				MatchRegexp("BytesField"),     // field name
-				MatchRegexp("BadUnsupported"), // struct name
-			))
+			testWriteBadType(w)
+			// TODO(js) Do we need further checks, e.g. file not exists ...?
 		})
 	})
 

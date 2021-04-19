@@ -114,22 +114,9 @@ var _ = Describe("SQLiteWriter", func() {
 
 		It("should return an error with an informative message", func() {
 			w := peanut.NewSQLiteWriter("./no-such-location/output-bogus")
-			defer func() {
-				err1 := w.Cancel()
-				err2 := w.Close()
-				Expect(err1).To(BeNil())
-				Expect(err2).To(BeNil())
-			}()
 
-			err := w.Write(BadUnsupported{})
-			Expect(err).ToNot(BeNil())
-
-			// Expect error message to be informative.
-			Expect(err.Error()).To(SatisfyAll(
-				MatchRegexp(`slice`),          // type
-				MatchRegexp("BytesField"),     // field name
-				MatchRegexp("BadUnsupported"), // struct name
-			))
+			testWriteBadType(w)
+			// TODO(js) Do we need further checks, e.g. file not exists ...?
 		})
 	})
 

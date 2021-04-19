@@ -31,9 +31,11 @@ var _ = Describe("JSONLWriter", func() {
 		os.Remove("./test/output-Foo-sequential.jsonl")
 		os.Remove("./test/output-Bar-sequential.jsonl")
 		os.Remove("./test/output-Baz-sequential.jsonl")
+		os.Remove("./test/output-Qux-sequential.jsonl")
 		os.Remove("./test/output-Foo-interleave.jsonl")
 		os.Remove("./test/output-Bar-interleave.jsonl")
 		os.Remove("./test/output-Baz-interleave.jsonl")
+		os.Remove("./test/output-Qux-interleave.jsonl")
 	})
 
 	It("should write the correct data when sequential structs are written", func() {
@@ -53,6 +55,8 @@ var _ = Describe("JSONLWriter", func() {
 		Expect(err).To(BeNil())
 		// fmt.Println(string(output3))
 		Expect(string(output3)).To(Equal(expectedOutput3))
+
+		Expect("./test/output-Qux-sequential.jsonl").ToNot(BeAnExistingFile())
 	})
 
 	It("should write the correct data when interleaved structs are written", func() {
@@ -72,6 +76,8 @@ var _ = Describe("JSONLWriter", func() {
 		Expect(err).To(BeNil())
 		// fmt.Println(string(output3))
 		Expect(string(output3)).To(Equal(expectedOutput3))
+
+		Expect("./test/output-Qux-interleave.jsonl").ToNot(BeAnExistingFile())
 	})
 
 	It("should not write anything when structs are written and cancel is called", func() {
@@ -105,22 +111,9 @@ var _ = Describe("JSONLWriter", func() {
 
 		It("should return an error with an informative message", func() {
 			w := peanut.NewJSONLWriter("./no-such-location/output-bogus-", "")
-			defer func() {
-				err1 := w.Cancel()
-				err2 := w.Close()
-				Expect(err1).To(BeNil())
-				Expect(err2).To(BeNil())
-			}()
 
-			err := w.Write(BadUnsupported{})
-			Expect(err).ToNot(BeNil())
-
-			// Expect error message to be informative.
-			Expect(err.Error()).To(SatisfyAll(
-				MatchRegexp(`slice`),          // type
-				MatchRegexp("BytesField"),     // field name
-				MatchRegexp("BadUnsupported"), // struct name
-			))
+			testWriteBadType(w)
+			// TODO(js) Do we need further checks, e.g. file not exists ...?
 		})
 	})
 })

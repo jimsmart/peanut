@@ -61,7 +61,7 @@ var _ = Describe("MockWriter", func() {
 		Expect(w.Headers).To(Equal(expectedHeaders))
 		Expect(w.Data).To(Equal(expectedData))
 
-		Expect(w.CalledWrite).To(Equal(7))
+		Expect(w.CalledWrite).To(Equal(10))
 		Expect(w.CalledClose).To(Equal(1))
 		Expect(w.CalledCancel).To(Equal(1))
 	})
@@ -74,7 +74,7 @@ var _ = Describe("MockWriter", func() {
 		Expect(w.Headers).To(Equal(expectedHeaders))
 		Expect(w.Data).To(Equal(expectedData))
 
-		Expect(w.CalledWrite).To(Equal(7))
+		Expect(w.CalledWrite).To(Equal(10))
 		Expect(w.CalledClose).To(Equal(1))
 		Expect(w.CalledCancel).To(Equal(0))
 	})
@@ -100,7 +100,7 @@ var _ = Describe("MockWriter", func() {
 		Expect(w.Headers).To(Equal(expectedHeaders))
 		Expect(w.Data).To(Equal(expectedDataPartial))
 
-		Expect(w.CalledWrite).To(Equal(7))
+		Expect(w.CalledWrite).To(Equal(10))
 		Expect(w.CalledClose).To(Equal(1))
 		Expect(w.CalledCancel).To(Equal(1))
 	})
@@ -108,23 +108,10 @@ var _ = Describe("MockWriter", func() {
 	Context("when given a struct with an unsupported field type", func() {
 
 		It("should return an error with an informative message", func() {
-			w := peanut.MockWriter{}
-			defer func() {
-				err1 := w.Cancel()
-				err2 := w.Close()
-				Expect(err1).To(BeNil())
-				Expect(err2).To(BeNil())
-			}()
+			w := &peanut.MockWriter{}
 
-			err := w.Write(BadUnsupported{})
-			Expect(err).ToNot(BeNil())
-
-			// Expect error message to be informative.
-			Expect(err.Error()).To(SatisfyAll(
-				MatchRegexp(`slice`),          // type
-				MatchRegexp("BytesField"),     // field name
-				MatchRegexp("BadUnsupported"), // struct name
-			))
+			testWriteBadType(w)
+			// TODO(js) Do we need further checks, e.g. file not exists ...?
 		})
 	})
 })

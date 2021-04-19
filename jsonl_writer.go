@@ -66,6 +66,9 @@ func (w *JSONLWriter) register(x interface{}) (reflect.Type, error) {
 	if err := allFieldsSupportedKinds(x); err != nil {
 		return nil, err
 	}
+	if len(w.base.tagsByType[t]) == 0 {
+		return t, nil
+	}
 
 	// log.Printf("Setting up jsonl.Writer for %s", t.Name())
 
@@ -93,6 +96,9 @@ func (w *JSONLWriter) Write(x interface{}) error {
 	t, err := w.register(x)
 	if err != nil {
 		return err
+	}
+	if len(w.base.tagsByType[t]) == 0 {
+		return nil
 	}
 	// log.Printf("WriteRecord for %s", t.Name())
 	enc := w.builderByType[t].enc

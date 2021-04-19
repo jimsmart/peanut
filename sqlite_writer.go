@@ -80,6 +80,9 @@ func (w *SQLiteWriter) register(x interface{}) (reflect.Type, error) {
 	if err := allFieldsSupportedKinds(x); err != nil {
 		return nil, err
 	}
+	if len(w.base.tagsByType[t]) == 0 {
+		return t, nil
+	}
 
 	// Lazy init of database.
 	if w.db == nil {
@@ -216,6 +219,9 @@ func (w *SQLiteWriter) Write(x interface{}) error {
 	t, err := w.register(x)
 	if err != nil {
 		return err
+	}
+	if len(w.base.tagsByType[t]) == 0 {
+		return nil
 	}
 
 	// log.Printf("WriteRecord for %s", t.Name())

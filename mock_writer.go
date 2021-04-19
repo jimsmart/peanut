@@ -33,6 +33,9 @@ func (w *MockWriter) register(x interface{}) (reflect.Type, error) {
 	if err := allFieldsSupportedKinds(x); err != nil {
 		return nil, err
 	}
+	if len(w.base.tagsByType[t]) == 0 {
+		return t, nil
+	}
 	w.Headers[t.Name()] = w.headersByType[t]
 	return t, nil
 }
@@ -43,6 +46,9 @@ func (w *MockWriter) Write(x interface{}) error {
 	t, err := w.register(x)
 	if err != nil {
 		return err
+	}
+	if len(w.base.tagsByType[t]) == 0 {
+		return nil
 	}
 
 	n := t.Name()

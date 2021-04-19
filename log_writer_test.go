@@ -36,6 +36,9 @@ var _ = Describe("LogWriter", func() {
 			"<Bar> bar_int: 2 bar_string: test 2\n" +
 			"<Bar> bar_int: 3 bar_string: test 3\n" +
 			"<Baz> baz_string: test 1 baz_bool: true baz_float32: 1.234 baz_float64: 9.876 baz_int: -12345 baz_int8: -8 baz_int16: -16 baz_int32: -32 baz_int64: -64 baz_uint: 12345 baz_uint8: 8 baz_uint16: 16 baz_uint32: 32 baz_uint64: 64\n" +
+			"<Qux> -\n" +
+			"<Qux> -\n" +
+			"<Qux> -\n" +
 			"Called LogWriter.Close\n" +
 			"Called LogWriter.Cancel\n"
 
@@ -51,10 +54,13 @@ var _ = Describe("LogWriter", func() {
 
 		expectedOutput := "<Foo> foo_string: test 1 foo_int: 1\n" +
 			"<Bar> bar_int: 1 bar_string: test 1\n" +
+			"<Qux> -\n" +
 			"<Foo> foo_string: test 2 foo_int: 2\n" +
 			"<Bar> bar_int: 2 bar_string: test 2\n" +
+			"<Qux> -\n" +
 			"<Foo> foo_string: test 3 foo_int: 3\n" +
 			"<Bar> bar_int: 3 bar_string: test 3\n" +
+			"<Qux> -\n" +
 			"<Baz> baz_string: test 1 baz_bool: true baz_float32: 1.234 baz_float64: 9.876 baz_int: -12345 baz_int8: -8 baz_int16: -16 baz_int32: -32 baz_int64: -64 baz_uint: 12345 baz_uint8: 8 baz_uint16: 16 baz_uint32: 32 baz_uint64: 64\n" +
 			"Called LogWriter.Close\n"
 
@@ -108,7 +114,7 @@ var _ = Describe("LogWriter", func() {
 		for _, x := range lines {
 			// fmt.Println(x)
 			if len(x) > 0 {
-				Expect(x).To(MatchRegexp(`^\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2} <[A-Z][a-z]*> [a-z]`))
+				Expect(x).To(MatchRegexp(`^\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2} <[A-Z][a-z]*> [a-z\-]`))
 			}
 		}
 	})
@@ -116,23 +122,10 @@ var _ = Describe("LogWriter", func() {
 	Context("when given a struct with an unsupported field type", func() {
 
 		It("should return an error with an informative message", func() {
-			w := peanut.LogWriter{}
-			defer func() {
-				err1 := w.Cancel()
-				err2 := w.Close()
-				Expect(err1).To(BeNil())
-				Expect(err2).To(BeNil())
-			}()
+			w := &peanut.LogWriter{}
 
-			err := w.Write(BadUnsupported{})
-			Expect(err).ToNot(BeNil())
-
-			// Expect error message to be informative.
-			Expect(err.Error()).To(SatisfyAll(
-				MatchRegexp(`slice`),          // type
-				MatchRegexp("BytesField"),     // field name
-				MatchRegexp("BadUnsupported"), // struct name
-			))
+			testWriteBadType(w)
+			// TODO(js) Do we need further checks, e.g. file not exists ...?
 		})
 	})
 

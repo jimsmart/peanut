@@ -34,6 +34,11 @@ type Baz struct {
 	privateField int     `peanut:"baz_private"`
 }
 
+type Qux struct {
+	StringField string
+	IntField    int
+}
+
 type BadUnsupported struct {
 	BytesField []byte `peanut:"bytes_field"`
 }
@@ -69,6 +74,12 @@ var testOutputBaz = []Baz{
 	},
 }
 
+var testOutputQux = []*Qux{
+	{IntField: 1, StringField: "test 1"},
+	{IntField: 2, StringField: "test 2"},
+	{IntField: 3, StringField: "test 3"},
+}
+
 func testWritesAndCloseSequential(w peanut.Writer) {
 	var err error
 	for i := range testOutputFoo {
@@ -81,6 +92,10 @@ func testWritesAndCloseSequential(w peanut.Writer) {
 	}
 	for i := range testOutputBaz {
 		err = w.Write(testOutputBaz[i])
+		Expect(err).To(BeNil())
+	}
+	for i := range testOutputQux {
+		err = w.Write(testOutputQux[i])
 		Expect(err).To(BeNil())
 	}
 	err = w.Close()
@@ -97,6 +112,8 @@ func testWritesAndCloseInterleaved(w peanut.Writer) {
 		err = w.Write(testOutputFoo[i])
 		Expect(err).To(BeNil())
 		err = w.Write(testOutputBar[i])
+		Expect(err).To(BeNil())
+		err = w.Write(testOutputQux[i])
 		Expect(err).To(BeNil())
 	}
 	for i := range testOutputBaz {
@@ -119,6 +136,26 @@ func testWritesAndCancel(w peanut.Writer) {
 	// Calling Close after Cancel should be a no-op.
 	err = w.Close()
 	Expect(err).To(BeNil())
+}
+
+func testWriteBadType(w peanut.Writer) {
+
+	defer func() {
+		err1 := w.Cancel()
+		err2 := w.Close()
+		Expect(err1).To(BeNil())
+		Expect(err2).To(BeNil())
+	}()
+
+	err := w.Write(BadUnsupported{})
+	Expect(err).ToNot(BeNil())
+
+	// Expect error message to be informative.
+	Expect(err.Error()).To(SatisfyAll(
+		MatchRegexp(`slice`),          // type
+		MatchRegexp("BytesField"),     // field name
+		MatchRegexp("BadUnsupported"), // struct name
+	))
 }
 
 func testWriteAfterClose(w peanut.Writer) {

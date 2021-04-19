@@ -55,6 +55,9 @@ func (w *ExcelWriter) register(x interface{}) (reflect.Type, error) {
 	if err := allFieldsSupportedKinds(x); err != nil {
 		return nil, err
 	}
+	if len(w.base.tagsByType[t]) == 0 {
+		return t, nil
+	}
 
 	excel, err := newExcelBuilder(w.prefix + t.Name() + w.suffix + ".xlsx")
 	if err != nil {
@@ -89,6 +92,9 @@ func (w *ExcelWriter) Write(x interface{}) error {
 	t, err := w.register(x)
 	if err != nil {
 		return err
+	}
+	if len(w.base.tagsByType[t]) == 0 {
+		return nil
 	}
 	excel := w.builderByType[t]
 	return excel.AddRow(excelValuesFrom(x)...)

@@ -56,6 +56,9 @@ func (w *LogWriter) Write(x interface{}) error {
 			m += fmt.Sprintf(" %s", v[i])
 		}
 	}
+	if len(h) == 0 {
+		m += " -"
+	}
 	// Log it.
 	w.Logger.Println(m)
 	return nil

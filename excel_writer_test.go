@@ -40,9 +40,11 @@ var _ = Describe("ExcelWriter", func() {
 		os.Remove("./test/output-Foo-sequential.xlsx")
 		os.Remove("./test/output-Bar-sequential.xlsx")
 		os.Remove("./test/output-Baz-sequential.xlsx")
+		os.Remove("./test/output-Qux-sequential.xlsx")
 		os.Remove("./test/output-Foo-interleave.xlsx")
 		os.Remove("./test/output-Bar-interleave.xlsx")
 		os.Remove("./test/output-Baz-interleave.xlsx")
+		os.Remove("./test/output-Qux-interleave.xlsx")
 	})
 
 	It("should write the correct data when sequential structs are written", func() {
@@ -61,6 +63,8 @@ var _ = Describe("ExcelWriter", func() {
 		output3, err := readExcel("./test/output-Baz-sequential.xlsx")
 		Expect(err).To(BeNil())
 		Expect(output3).To(Equal(expectedOutput3))
+
+		Expect("./test/output-Qux-sequential.xlsx").ToNot(BeAnExistingFile())
 	})
 
 	It("should write the correct data when interleaved structs are written", func() {
@@ -79,6 +83,8 @@ var _ = Describe("ExcelWriter", func() {
 		output3, err := readExcel("./test/output-Baz-interleave.xlsx")
 		Expect(err).To(BeNil())
 		Expect(output3).To(Equal(expectedOutput3))
+
+		Expect("./test/output-Qux-interleave.xlsx").ToNot(BeAnExistingFile())
 	})
 
 	It("should not write anything when structs are written and cancel is called", func() {
@@ -112,22 +118,9 @@ var _ = Describe("ExcelWriter", func() {
 
 		It("should return an error with an informative message", func() {
 			w := peanut.NewExcelWriter("./no-such-location/output-bogus-", "")
-			defer func() {
-				err1 := w.Cancel()
-				err2 := w.Close()
-				Expect(err1).To(BeNil())
-				Expect(err2).To(BeNil())
-			}()
 
-			err := w.Write(BadUnsupported{})
-			Expect(err).ToNot(BeNil())
-
-			// Expect error message to be informative.
-			Expect(err.Error()).To(SatisfyAll(
-				MatchRegexp(`slice`),          // type
-				MatchRegexp("BytesField"),     // field name
-				MatchRegexp("BadUnsupported"), // struct name
-			))
+			testWriteBadType(w)
+			// TODO(js) Do we need further checks, e.g. file not exists ...?
 		})
 	})
 
