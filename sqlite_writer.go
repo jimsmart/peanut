@@ -156,18 +156,19 @@ func (w *SQLiteWriter) createDDL(t reflect.Type) string {
 			col += "INT16"
 		case reflect.Int32:
 			col += "INT32"
+		case reflect.Uint, reflect.Uint64:
+			col += "UNSIGNED INT64"
 		case reflect.Uint8:
 			col += "UNSIGNED INT8"
 		case reflect.Uint16:
 			col += "UNSIGNED INT16"
 		case reflect.Uint32:
 			col += "UNSIGNED INT32"
-		case reflect.Uint, reflect.Uint64:
-			col += "UNSIGNED INT64"
 		default:
 			// TODO(js) This should show the type name for the owning struct,
 			// the name of the field, and the bad type. IDK what it shows currently.
-			m := fmt.Sprintf("Unknown type: %v", t.Name())
+			// m := fmt.Sprintf("Unknown type: %v", t.Name()) // This shows the value. :/
+			m := fmt.Sprintf("Unknown type: %s", typs[i].Kind().String())
 			panic(m)
 		}
 

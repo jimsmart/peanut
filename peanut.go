@@ -95,7 +95,7 @@ func reflectStructValues(x interface{}, fn func(name string, t reflect.Type, v i
 			default:
 				// TODO(js) This should also show the type name for the owning struct,
 				// and the name of the field.
-				m := fmt.Sprintf("Unknown type: %s", field.Type.Name())
+				m := fmt.Sprintf("Unknown type: %s", field.Type.Kind().String())
 				panic(m)
 			}
 

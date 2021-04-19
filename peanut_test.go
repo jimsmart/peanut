@@ -25,11 +25,11 @@ type Baz struct {
 	Int16Field   int16   `peanut:"baz_int16"`
 	Int32Field   int32   `peanut:"baz_int32"`
 	Int64Field   int64   `peanut:"baz_int64"`
-	UintField    int     `peanut:"baz_uint"`
-	Uint8Field   int8    `peanut:"baz_uint8"`
-	Uint16Field  int16   `peanut:"baz_uint16"`
-	Uint32Field  int32   `peanut:"baz_uint32"`
-	Uint64Field  int64   `peanut:"baz_uint64"`
+	UintField    uint    `peanut:"baz_uint"`
+	Uint8Field   uint8   `peanut:"baz_uint8"`
+	Uint16Field  uint16  `peanut:"baz_uint16"`
+	Uint32Field  uint32  `peanut:"baz_uint32"`
+	Uint64Field  uint64  `peanut:"baz_uint64"`
 	IgnoredField int     // No tag.
 }
 

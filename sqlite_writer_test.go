@@ -51,7 +51,7 @@ var _ = Describe("SQLiteWriter", func() {
 		},
 		"Baz": {
 			columns: []string{"baz_string", "baz_bool", "baz_float32", "baz_float64", "baz_int", "baz_int8", "baz_int16", "baz_int32", "baz_int64", "baz_uint", "baz_uint8", "baz_uint16", "baz_uint32", "baz_uint64"},
-			types:   []string{"TEXT", "BOOLEAN", "REAL", "REAL", "INT64", "INT8", "INT16", "INT32", "INT64", "INT64", "INT8", "INT16", "INT32", "INT64"},
+			types:   []string{"TEXT", "BOOLEAN", "REAL", "REAL", "INT64", "INT8", "INT16", "INT32", "INT64", "UNSIGNED INT64", "UNSIGNED INT8", "UNSIGNED INT16", "UNSIGNED INT32", "UNSIGNED INT64"},
 			pks:     []string{"baz_string"},
 			data: [][]string{
 				{"test 1", "true", "1.234", "9.876", "-12345", "-8", "-16", "-32", "-64", "12345", "8", "16", "32", "64"},
