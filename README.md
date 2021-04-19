@@ -99,4 +99,4 @@ Package peanut is copyright 2020-2021 by Jim Smart and released under the [BSD 3
 
 ## History
 
-- v0.0.1 (2021-04-19) Repository made public.
+- v1.0.1 (2021-04-19) Repository made public.
