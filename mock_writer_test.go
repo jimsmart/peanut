@@ -45,6 +45,14 @@ var _ = Describe("MockWriter", func() {
 		},
 	}
 
+	expectedDataPartial := map[string][]map[string]string{
+		"Bar": {
+			{"bar_int": "1", "bar_string": "test 1"},
+			{"bar_int": "2", "bar_string": "test 2"},
+			{"bar_int": "3", "bar_string": "test 3"},
+		},
+	}
+
 	It("should capture the correct headers and data when sequential structs are written", func() {
 		w := &peanut.MockWriter{}
 
@@ -80,4 +88,20 @@ var _ = Describe("MockWriter", func() {
 		Expect(w.CalledCancel).To(Equal(1))
 	})
 
+	It("should capture the correct headers and data when DisableDataCapture is used", func() {
+		w := &peanut.MockWriter{}
+		w.DisableDataCapture = map[string]bool{
+			"Foo": true,
+			"Baz": true,
+		}
+
+		testWritesAndCloseSequential(w)
+
+		Expect(w.Headers).To(Equal(expectedHeaders))
+		Expect(w.Data).To(Equal(expectedDataPartial))
+
+		Expect(w.CalledWrite).To(Equal(7))
+		Expect(w.CalledClose).To(Equal(1))
+		Expect(w.CalledCancel).To(Equal(0))
+	})
 })

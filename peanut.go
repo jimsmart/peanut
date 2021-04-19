@@ -117,6 +117,16 @@ func stringValues(x interface{}) []string {
 	return out
 }
 
+func stringValuesAsMap(x interface{}) map[string]string {
+	out := make(map[string]string)
+	reflectStructValues(x, func(name string, t reflect.Type, v interface{}, tag string) {
+		tag = firstTagValue(tag)
+		// Put value into map.
+		out[tag] = fmt.Sprintf("%v", v)
+	})
+	return out
+}
+
 func mapValues(x interface{}) map[string]interface{} {
 	out := make(map[string]interface{})
 	reflectStructValues(x, func(name string, t reflect.Type, v interface{}, tag string) {

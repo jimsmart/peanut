@@ -1,7 +1,6 @@
 package peanut
 
 import (
-	"fmt"
 	"reflect"
 )
 
@@ -64,13 +63,4 @@ func (w *MockWriter) Close() error {
 func (w *MockWriter) Cancel() error {
 	w.CalledCancel++
 	return nil
-}
-
-func stringValuesAsMap(x interface{}) map[string]string {
-	out := make(map[string]string)
-	reflectStructValues(x, func(name string, t reflect.Type, v interface{}, tag string) {
-		tag = firstTagValue(tag)
-		out[tag] = fmt.Sprintf("%v", v)
-	})
-	return out
 }
