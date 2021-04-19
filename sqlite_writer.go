@@ -2,7 +2,6 @@ package peanut
 
 import (
 	"database/sql"
-	"fmt"
 	"os"
 	"reflect"
 	"strings"
@@ -157,15 +156,7 @@ func (w *SQLiteWriter) createDDL(t reflect.Type) string {
 		col := "\t\"" + hdrs[i] + "\" "
 
 		// Column datatype.
-		t, ok := kindToDBType[typs[i].Kind()]
-		if !ok {
-			// TODO(js) This should show the type name for the owning struct,
-			// the name of the field, and the bad type. IDK what it shows currently.
-			// m := fmt.Sprintf("Unknown type: %v", t.Name()) // This shows the value. :/
-			m := fmt.Sprintf("Unknown type: %s", typs[i].Kind().String())
-			panic(m)
-		}
-		col += t
+		col += kindToDBType[typs[i].Kind()]
 
 		// Column constraints.
 		col += " NOT NULL"

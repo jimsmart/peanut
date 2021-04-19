@@ -62,6 +62,23 @@ func baseType(x interface{}) reflect.Type {
 	return t
 }
 
+var supportedType = map[reflect.Kind]bool{
+	reflect.String:  true,
+	reflect.Bool:    true,
+	reflect.Float64: true,
+	reflect.Float32: true,
+	reflect.Int8:    true,
+	reflect.Int16:   true,
+	reflect.Int32:   true,
+	reflect.Int64:   true,
+	reflect.Int:     true,
+	reflect.Uint8:   true,
+	reflect.Uint16:  true,
+	reflect.Uint32:  true,
+	reflect.Uint64:  true,
+	reflect.Uint:    true,
+}
+
 func reflectStructValues(x interface{}, fn func(name string, t reflect.Type, v interface{}, tag string)) {
 
 	// TODO(js) This should work with Ptr and non-Ptr.
@@ -86,18 +103,25 @@ func reflectStructValues(x interface{}, fn func(name string, t reflect.Type, v i
 				continue
 			}
 
-			switch field.Type.Kind() {
-			case reflect.String, reflect.Bool, reflect.Float32, reflect.Float64,
-				reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-				reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-				// Allowed/supported type.
-				break
-			default:
+			if !supportedType[field.Type.Kind()] {
 				// TODO(js) This should also show the type name for the owning struct,
 				// and the name of the field.
 				m := fmt.Sprintf("Unknown type: %s", field.Type.Kind().String())
 				panic(m)
 			}
+
+			// switch field.Type.Kind() {
+			// case reflect.String, reflect.Bool, reflect.Float32, reflect.Float64,
+			// 	reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+			// 	reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			// 	// Allowed/supported type.
+			// 	break
+			// default:
+			// 	// TODO(js) This should also show the type name for the owning struct,
+			// 	// and the name of the field.
+			// 	m := fmt.Sprintf("Unknown type: %s", field.Type.Kind().String())
+			// 	panic(m)
+			// }
 
 			val := t.Field(i).Interface()
 
