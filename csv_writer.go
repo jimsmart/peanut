@@ -118,6 +118,9 @@ func (w *CSVWriter) Write(x interface{}) error {
 
 // Close flushes all buffers and writers,
 // and closes the output files.
+//
+// Calling Close after a previous call to
+// Cancel is safe, and always results in a no-op.
 func (w *CSVWriter) Close() error {
 	if w.closed {
 		return nil

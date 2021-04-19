@@ -92,6 +92,9 @@ func (w *ExcelWriter) Write(x interface{}) error {
 }
 
 // Close the writer, ensuring all files are saved.
+//
+// Calling Close after a previous call to
+// Cancel is safe, and always results in a no-op.
 func (w *ExcelWriter) Close() error {
 	if w.closed {
 		return nil

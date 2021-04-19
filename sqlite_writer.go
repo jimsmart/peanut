@@ -224,6 +224,9 @@ func (w *SQLiteWriter) Write(x interface{}) error {
 // Close cleans up all used resources,
 // closes the database connection,
 // and moves the database to its final location.
+//
+// Calling Close after a previous call to
+// Cancel is safe, and always results in a no-op.
 func (w *SQLiteWriter) Close() error {
 	if w.closed {
 		return nil
