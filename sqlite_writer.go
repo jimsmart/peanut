@@ -77,6 +77,9 @@ func (w *SQLiteWriter) register(x interface{}) (reflect.Type, error) {
 	if !ok {
 		return t, nil
 	}
+	if err := allFieldsSupportedKinds(x); err != nil {
+		return nil, err
+	}
 
 	// Lazy init of database.
 	if w.db == nil {
@@ -245,6 +248,9 @@ func (w *SQLiteWriter) Close() error {
 }
 
 func (w *SQLiteWriter) close() error {
+	if w.db == nil {
+		return nil
+	}
 	var rerr error
 
 	// TODO(js) We should make lists of errors.
@@ -285,9 +291,11 @@ func (w *SQLiteWriter) Cancel() error {
 
 	rerr = w.close()
 
-	err := os.Remove(w.tmpFilename)
-	if err != nil {
-		rerr = err
+	if w.db != nil {
+		err := os.Remove(w.tmpFilename)
+		if err != nil {
+			rerr = err
+		}
 	}
 
 	w.closed = true

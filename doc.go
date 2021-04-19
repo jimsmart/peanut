@@ -100,5 +100,5 @@
 // Pointer following and nested structs are currently unsupported.
 //
 // Tagging a field that has an unsupported datatype will result in a
-// panic when Write is called.
+// error when Write is called.
 package peanut

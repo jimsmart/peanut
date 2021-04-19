@@ -80,6 +80,9 @@ func (w *CSVWriter) register(x interface{}) (reflect.Type, error) {
 	if !ok {
 		return t, nil
 	}
+	if err := allFieldsSupportedKinds(x); err != nil {
+		return nil, err
+	}
 
 	// log.Printf("Setting up csv.Writer for %s", t.Name())
 

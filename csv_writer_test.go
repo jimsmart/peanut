@@ -96,27 +96,24 @@ var _ = Describe("CSVWriter", func() {
 
 	Context("when given a struct with an unsupported field type", func() {
 
-		It("should panic with an appropriate message", func() {
+		It("should return an error with an informative message", func() {
 			w := peanut.NewCSVWriter("./no-such-location/output-bogus-", "")
+			defer func() {
+				err1 := w.Cancel()
+				err2 := w.Close()
+				Expect(err1).To(BeNil())
+				Expect(err2).To(BeNil())
+			}()
 
-			// err := w.Write(&BadField{})
-			// Expect(err).To(BeNil())
+			err := w.Write(BadUnsupported{})
+			Expect(err).ToNot(BeNil())
 
-			fn := func() {
-				w.Write(BadUnsupported{})
-			}
-
-			// Expect panic message to be informative.
-			Expect(fn).To(PanicWith(SatisfyAll(
+			// Expect error message to be informative.
+			Expect(err.Error()).To(SatisfyAll(
 				MatchRegexp(`slice`),          // type
 				MatchRegexp("BytesField"),     // field name
 				MatchRegexp("BadUnsupported"), // struct name
-			)))
-
-			// Expect(err).To(BeNil())
-
-			// err = w.Close()
-			// Expect(err).ToNot(BeNil())
+			))
 		})
 	})
 

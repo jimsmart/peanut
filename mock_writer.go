@@ -30,6 +30,9 @@ func (w *MockWriter) register(x interface{}) (reflect.Type, error) {
 	if !ok {
 		return t, nil
 	}
+	if err := allFieldsSupportedKinds(x); err != nil {
+		return nil, err
+	}
 	w.Headers[t.Name()] = w.headersByType[t]
 	return t, nil
 }

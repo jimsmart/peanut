@@ -1,6 +1,7 @@
 package peanut
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -62,7 +63,7 @@ func baseType(x interface{}) reflect.Type {
 	return t
 }
 
-var supportedType = map[reflect.Kind]bool{
+var supportedKind = map[reflect.Kind]bool{
 	reflect.String:  true,
 	reflect.Bool:    true,
 	reflect.Float64: true,
@@ -77,6 +78,20 @@ var supportedType = map[reflect.Kind]bool{
 	reflect.Uint32:  true,
 	reflect.Uint64:  true,
 	reflect.Uint:    true,
+}
+
+func allFieldsSupportedKinds(x interface{}) error {
+	var err error
+	reflectStructFields(x, func(name string, t reflect.Type, tag string) {
+		if !supportedKind[t.Kind()] {
+			if err == nil {
+				sn := baseType(x).Name()
+				m := fmt.Sprintf("Unsupported type: %s in %s.%s", t.Kind().String(), sn, name)
+				err = errors.New(m)
+			}
+		}
+	})
+	return err
 }
 
 func reflectStructValues(x interface{}, fn func(name string, t reflect.Type, v interface{}, tag string)) {
@@ -101,13 +116,6 @@ func reflectStructValues(x interface{}, fn func(name string, t reflect.Type, v i
 			r, _ := utf8.DecodeRuneInString(name)
 			if !unicode.IsUpper(r) {
 				continue
-			}
-
-			if !supportedType[field.Type.Kind()] {
-				// TODO(js) Panicking here leaves all manner of temporary files :/
-				sn := baseType(x).Name()
-				m := fmt.Sprintf("Unsupported type: %s in %s.%s", field.Type.Kind().String(), sn, field.Name)
-				panic(m)
 			}
 
 			val := t.Field(i).Interface()

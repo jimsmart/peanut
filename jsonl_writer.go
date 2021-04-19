@@ -63,6 +63,9 @@ func (w *JSONLWriter) register(x interface{}) (reflect.Type, error) {
 	if !ok {
 		return t, nil
 	}
+	if err := allFieldsSupportedKinds(x); err != nil {
+		return nil, err
+	}
 
 	// log.Printf("Setting up jsonl.Writer for %s", t.Name())
 

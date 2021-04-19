@@ -1,7 +1,6 @@
 package peanut
 
 import (
-	"fmt"
 	"reflect"
 )
 
@@ -52,6 +51,9 @@ func (w *ExcelWriter) register(x interface{}) (reflect.Type, error) {
 	t, ok := w.base.register(x)
 	if !ok {
 		return t, nil
+	}
+	if err := allFieldsSupportedKinds(x); err != nil {
+		return nil, err
 	}
 
 	excel, err := newExcelBuilder(w.prefix + t.Name() + w.suffix + ".xlsx")
@@ -125,16 +127,8 @@ func excelValuesFrom(x interface{}) []interface{} {
 	// TODO This is badly named, it's not just used by ExcelWriter.
 	var out []interface{}
 	reflectStructValues(x, func(name string, t reflect.Type, v interface{}, tag string) {
-		switch t.Kind() {
-		case reflect.String, reflect.Bool, reflect.Float64, reflect.Float32,
-			reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			out = append(out, v)
-		default:
-			m := fmt.Sprintf("Unknown type: %s", t.Kind().String())
-			panic(m)
-		}
-		// out = append(out, v)
+		// Add value to list.
+		out = append(out, v)
 	})
 	return out
 }

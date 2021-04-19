@@ -28,7 +28,13 @@ func (w *LogWriter) register(x interface{}) (reflect.Type, error) {
 			w.Logger = log.New(os.Stderr, "", log.Ldate|log.Ltime)
 		}
 	}
-	t, _ := w.base.register(x)
+	t, ok := w.base.register(x)
+	if !ok {
+		return t, nil
+	}
+	if err := allFieldsSupportedKinds(x); err != nil {
+		return nil, err
+	}
 	return t, nil
 }
 
