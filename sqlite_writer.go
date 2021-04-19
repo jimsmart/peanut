@@ -120,6 +120,23 @@ func (w *SQLiteWriter) register(x interface{}) (reflect.Type, error) {
 	return t, nil
 }
 
+var kindToDBType = map[reflect.Kind]string{
+	reflect.String:  "TEXT",
+	reflect.Bool:    "BOOLEAN",
+	reflect.Float64: "REAL",
+	reflect.Float32: "REAL",
+	reflect.Int8:    "INT8",
+	reflect.Int16:   "INT16",
+	reflect.Int32:   "INT32",
+	reflect.Int64:   "INT64",
+	reflect.Int:     "INT64",
+	reflect.Uint8:   "UNSIGNED INT8",
+	reflect.Uint16:  "UNSIGNED INT16",
+	reflect.Uint32:  "UNSIGNED INT32",
+	reflect.Uint64:  "UNSIGNED INT64",
+	reflect.Uint:    "UNSIGNED INT64",
+}
+
 func (w *SQLiteWriter) createDDL(t reflect.Type) string {
 
 	// Create table using type name.
@@ -141,36 +158,15 @@ func (w *SQLiteWriter) createDDL(t reflect.Type) string {
 
 		// TODO(js) Refactor reflect-type->db-type out, to reduce cyclomatic complexity.
 		// Column datatype.
-		switch typs[i].Kind() {
-		case reflect.String:
-			col += "TEXT"
-		case reflect.Int, reflect.Int64:
-			col += "INT64"
-		case reflect.Bool:
-			col += "BOOLEAN"
-		case reflect.Float64, reflect.Float32:
-			col += "REAL"
-		case reflect.Int8:
-			col += "INT8"
-		case reflect.Int16:
-			col += "INT16"
-		case reflect.Int32:
-			col += "INT32"
-		case reflect.Uint, reflect.Uint64:
-			col += "UNSIGNED INT64"
-		case reflect.Uint8:
-			col += "UNSIGNED INT8"
-		case reflect.Uint16:
-			col += "UNSIGNED INT16"
-		case reflect.Uint32:
-			col += "UNSIGNED INT32"
-		default:
+		t, ok := kindToDBType[typs[i].Kind()]
+		if !ok {
 			// TODO(js) This should show the type name for the owning struct,
 			// the name of the field, and the bad type. IDK what it shows currently.
 			// m := fmt.Sprintf("Unknown type: %v", t.Name()) // This shows the value. :/
 			m := fmt.Sprintf("Unknown type: %s", typs[i].Kind().String())
 			panic(m)
 		}
+		col += t
 
 		// Column constraints.
 		col += " NOT NULL"
