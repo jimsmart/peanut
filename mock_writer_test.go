@@ -12,6 +12,7 @@ var _ = Describe("MockWriter", func() {
 		"Foo": {"foo_string", "foo_int"},
 		"Bar": {"bar_int", "bar_string"},
 		"Baz": {"baz_string", "baz_bool", "baz_float32", "baz_float64", "baz_int", "baz_int8", "baz_int16", "baz_int32", "baz_int64", "baz_uint", "baz_uint8", "baz_uint16", "baz_uint32", "baz_uint64"},
+		"Qux": nil,
 	}
 
 	expectedData := map[string][]map[string]string{
@@ -43,6 +44,7 @@ var _ = Describe("MockWriter", func() {
 				"baz_uint64":  "64",
 			},
 		},
+		"Qux": {nil, nil, nil},
 	}
 
 	expectedDataPartial := map[string][]map[string]string{
@@ -93,6 +95,7 @@ var _ = Describe("MockWriter", func() {
 		w.DisableDataCapture = map[string]bool{
 			"Foo": true,
 			"Baz": true,
+			"Qux": true,
 		}
 
 		testWritesAndCloseSequential(w)

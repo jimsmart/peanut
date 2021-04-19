@@ -143,6 +143,9 @@ func stringValuesAsMap(x interface{}) map[string]string {
 		// Put value into map.
 		out[tag] = fmt.Sprintf("%v", v)
 	})
+	if len(out) == 0 {
+		return nil
+	}
 	return out
 }
 

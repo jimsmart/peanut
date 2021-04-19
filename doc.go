@@ -14,8 +14,10 @@
 // All writers have the same basic interface: a Write method,
 // that can take any appropriately tagged struct; a Close method,
 // which should be called to successfully complete writing; and
-// a Cancel method, which should be called (instead of Close)
-// to clean-up in the event of an error or cancellation during writing.
+// a Cancel method, which should be called to abort writing and
+// clean-up, in the event of an error or cancellation. It is safe
+// to make mulltiple calls to Cancel, and it is safe to call Close
+// after having previously called Cancel.
 //
 // All writers output their files atomically — that is to say:
 // all output is written to a temporary location and only moved to the
