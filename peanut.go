@@ -83,12 +83,10 @@ var supportedKind = map[reflect.Kind]bool{
 func allFieldsSupportedKinds(x interface{}) error {
 	var err error
 	reflectStructFields(x, func(name string, t reflect.Type, tag string) {
-		if !supportedKind[t.Kind()] {
-			if err == nil {
-				sn := baseType(x).Name()
-				m := fmt.Sprintf("Unsupported type: %s in %s.%s", t.Kind().String(), sn, name)
-				err = errors.New(m)
-			}
+		if !supportedKind[t.Kind()] && err == nil {
+			sn := baseType(x).Name()
+			m := fmt.Sprintf("Unsupported type: %s in %s.%s", t.Kind().String(), sn, name)
+			err = errors.New(m)
 		}
 	})
 	return err
