@@ -120,3 +120,11 @@ func testWritesAndCancel(w peanut.Writer) {
 	err = w.Close()
 	Expect(err).To(BeNil())
 }
+
+func testWriteAfterClose(w peanut.Writer) {
+	var err error
+	err = w.Close()
+	Expect(err).To(BeNil())
+	err = w.Write(testOutputFoo[0])
+	Expect(err).To(Equal(peanut.ErrClosedWriter))
+}

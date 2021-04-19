@@ -16,6 +16,9 @@ type Writer interface {
 	Cancel() error
 }
 
+// ErrClosedWriter is the error used for write operations on a closed writer.
+var ErrClosedWriter = errors.New("peanut: write on closed writer")
+
 //
 
 const tagName = "peanut"
@@ -85,8 +88,7 @@ func allFieldsSupportedKinds(x interface{}) error {
 	reflectStructFields(x, func(name string, t reflect.Type, tag string) {
 		if !supportedKind[t.Kind()] && err == nil {
 			sn := baseType(x).Name()
-			m := fmt.Sprintf("Unsupported type: %s in %s.%s", t.Kind().String(), sn, name)
-			err = errors.New(m)
+			err = fmt.Errorf("peanut: unsupported type: %s in %s.%s", t.Kind().String(), sn, name)
 		}
 	})
 	return err

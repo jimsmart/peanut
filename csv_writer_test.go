@@ -84,6 +84,14 @@ var _ = Describe("CSVWriter", func() {
 		Expect("./test/output-Bar-cancel.csv").ToNot(BeAnExistingFile())
 	})
 
+	It("should return an error when Write is called after Close", func() {
+		w := newFn("-close-write")
+
+		testWriteAfterClose(w)
+
+		Expect("./test/output-Foo-close-write.csv").ToNot(BeAnExistingFile())
+	})
+
 	It("should return an error when the path is bad", func() {
 		w := peanut.NewCSVWriter("./no-such-location/output-bogus-", "")
 

@@ -83,6 +83,14 @@ var _ = Describe("JSONLWriter", func() {
 		Expect("./test/output-Bar-cancel.jsonl").ToNot(BeAnExistingFile())
 	})
 
+	It("should return an error when Write is called after Close", func() {
+		w := newFn("-close-write")
+
+		testWriteAfterClose(w)
+
+		Expect("./test/output-Foo-close-write.jsonl").ToNot(BeAnExistingFile())
+	})
+
 	It("should return an error when the path is bad", func() {
 		w := peanut.NewJSONLWriter("./no-such-location/output-bogus-", "")
 

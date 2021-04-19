@@ -107,6 +107,9 @@ func (w *CSVWriter) register(x interface{}) (reflect.Type, error) {
 // in the corresponding output file, according to the
 // type of the given record.
 func (w *CSVWriter) Write(x interface{}) error {
+	if w.closed {
+		return ErrClosedWriter
+	}
 	t, err := w.register(x)
 	if err != nil {
 		return err

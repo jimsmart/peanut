@@ -83,6 +83,9 @@ func convert(list []string) []interface{} {
 // in the corresponding output file, according to the
 // type of the given record.
 func (w *ExcelWriter) Write(x interface{}) error {
+	if w.closed {
+		return ErrClosedWriter
+	}
 	t, err := w.register(x)
 	if err != nil {
 		return err

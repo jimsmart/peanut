@@ -92,6 +92,14 @@ var _ = Describe("SQLiteWriter", func() {
 		Expect("./test/output-cancel.sqlite").ToNot(BeAnExistingFile())
 	})
 
+	It("should return an error when Write is called after Close", func() {
+		w := newFn("-close-write")
+
+		testWriteAfterClose(w)
+
+		Expect("./test/output-Foo-close-write.sqlite").ToNot(BeAnExistingFile())
+	})
+
 	It("should return an error when the path is bad", func() {
 		w := peanut.NewSQLiteWriter("./no-such-location/output-bogus")
 

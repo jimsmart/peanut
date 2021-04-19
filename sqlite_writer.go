@@ -210,6 +210,9 @@ func (w *SQLiteWriter) createInsert(t reflect.Type) string {
 // in the corresponding table within the output database,
 // according to the type of the given record.
 func (w *SQLiteWriter) Write(x interface{}) error {
+	if w.closed {
+		return ErrClosedWriter
+	}
 	t, err := w.register(x)
 	if err != nil {
 		return err
@@ -241,9 +244,11 @@ func (w *SQLiteWriter) Close() error {
 		rerr = err
 	}
 
-	err = os.Rename(w.tmpFilename, w.dstFilename)
-	if err != nil {
-		rerr = err
+	if w.db != nil {
+		err = os.Rename(w.tmpFilename, w.dstFilename)
+		if err != nil {
+			rerr = err
+		}
 	}
 
 	w.closed = true

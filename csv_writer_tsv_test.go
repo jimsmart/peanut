@@ -84,6 +84,14 @@ var _ = Describe("TSVWriter", func() {
 		Expect("./test/output-Bar-cancel.tsv").ToNot(BeAnExistingFile())
 	})
 
+	It("should return an error when Write is called after Close", func() {
+		w := newFn("-close-write")
+
+		testWriteAfterClose(w)
+
+		Expect("./test/output-Foo-close-write.tsv").ToNot(BeAnExistingFile())
+	})
+
 	It("should return an error when the path is bad", func() {
 		w := peanut.NewTSVWriter("./no-such-location/output-bogus-", "")
 
