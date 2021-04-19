@@ -72,8 +72,8 @@ type Writer interface {
 1. Tag some structs.
 2. Initialise a `peanut.Writer` to use.
 3. Collect and assign data into tagged structs.
-4. Use `Write()` to write records, repeating until done.
-5. Call `Cancel()` to abort, `Close()` to finish.
+4. Call `Write()` to write records, repeating until done.
+5. Call `Close()` to finish.
 
 ### Example Code
 
