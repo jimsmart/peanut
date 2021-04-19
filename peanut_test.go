@@ -31,6 +31,7 @@ type Baz struct {
 	Uint32Field  uint32  `peanut:"baz_uint32"`
 	Uint64Field  uint64  `peanut:"baz_uint64"`
 	IgnoredField int     // No tag.
+	privateField int     `peanut:"baz_private"`
 }
 
 type BadUnsupported struct {
