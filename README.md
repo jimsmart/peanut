@@ -7,7 +7,7 @@
 [![Used By](https://img.shields.io/sourcegraph/rrc/github.com/jimsmart/peanut.svg)](https://sourcegraph.com/github.com/jimsmart/peanut)
 [![Godoc](https://img.shields.io/badge/godoc-reference-blue.svg)](https://godoc.org/github.com/jimsmart/peanut)
 
-peanut is a [Go](https://golang.org/) package to write tagged data structs in a variety of formats.
+peanut is a [Go](https://golang.org/) package to write tagged data structs to disk in a variety of formats.
 
 Its primary purpose is to provide a single consistent interface
 for easy, ceremony-free persistence of record-based struct data.
@@ -57,7 +57,7 @@ import "github.com/jimsmart/peanut"
 
 ### API
 
-Writers in peanut implement this interface:
+All peanut writers implement this interface:
 
 ```go
 type Writer interface {

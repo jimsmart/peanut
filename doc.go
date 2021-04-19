@@ -1,4 +1,4 @@
-// Package peanut writes tagged data structs in a variety of formats.
+// Package peanut writes tagged data structs to disk in a variety of formats.
 // Its primary purpose is to provide a single consistent interface
 // for easy, ceremony-free persistence of record-based struct data.
 //
