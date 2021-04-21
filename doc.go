@@ -3,7 +3,7 @@
 // for easy, ceremony-free persistence of record-based struct data.
 //
 // Each distinct struct type is written to an individual file (or table),
-// each named according to the name of the struct.
+// automatically created, each named according to the name of the struct.
 // Field/column names in each file/table are derived from struct tags.
 // All writers use the same tags.
 //
