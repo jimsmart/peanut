@@ -102,6 +102,7 @@ Package peanut is copyright 2020-2021 by Jim Smart and released under the [BSD 3
 
 ## History
 
+- v1.0.4 (2022-12-16) Updated dependencies.
 - v1.0.3 (2021-04-19) Relax semantics of Close/Cancel. Improved error handling.
 - v1.0.2 (2021-04-19) Fixup handling of uints.
 - v1.0.1 (2021-04-19) Repository made public.

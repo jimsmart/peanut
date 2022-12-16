@@ -1,7 +1,7 @@
 package peanut
 
 import (
-	"github.com/360EntSecGroup-Skylar/excelize/v2"
+	"github.com/xuri/excelize/v2"
 )
 
 // TODO(js) Excel has a limit on number of rows. Perhaps write should return an error when/after we reach capacity?

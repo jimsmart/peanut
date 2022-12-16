@@ -3,9 +3,9 @@ package peanut_test
 import (
 	"os"
 
-	"github.com/360EntSecGroup-Skylar/excelize/v2"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/xuri/excelize/v2"
 
 	"github.com/jimsmart/peanut"
 )
@@ -33,7 +33,7 @@ var _ = Describe("ExcelWriter", func() {
 
 	expectedOutput3 := [][]string{
 		{"baz_string", "baz_bool", "baz_float32", "baz_float64", "baz_int", "baz_int8", "baz_int16", "baz_int32", "baz_int64", "baz_uint", "baz_uint8", "baz_uint16", "baz_uint32", "baz_uint64"},
-		{"test 1", "1", "1.234", "9.876", "-12345", "-8", "-16", "-32", "-64", "12345", "8", "16", "32", "64"},
+		{"test 1", "TRUE", "1.234", "9.876", "-12345", "-8", "-16", "-32", "-64", "12345", "8", "16", "32", "64"},
 	}
 
 	AfterEach(func() {
