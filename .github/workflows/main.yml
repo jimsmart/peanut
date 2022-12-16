@@ -40,9 +40,9 @@ jobs:
     - name: Run tests
       run: go test -race -coverprofile=coverage.txt -covermode=atomic
 
-    # Upload coverage report to Codecov
-    - name: Report to Codecov
-      uses: codecov/codecov-action@v1.4.1
-      with:
-        file: ./coverage.txt
-        # fail_ci_if_error: true # optional (default = false)
+    # # Upload coverage report to Codecov
+    # - name: Report to Codecov
+    #   uses: codecov/codecov-action@v1.4.1
+    #   with:
+    #     file: ./coverage.txt
+    #     # fail_ci_if_error: true # optional (default = false)
