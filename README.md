@@ -98,7 +98,7 @@ go test -coverprofile=coverage.out && go tool cover -html=coverage.out
 
 ## License
 
-Package peanut is copyright 2020-2022 by Jim Smart and released under the [BSD 3-Clause License](LICENSE.md).
+Package peanut is copyright 2020-2023 by Jim Smart and released under the [BSD 3-Clause License](LICENSE.md).
 
 ## History
 
