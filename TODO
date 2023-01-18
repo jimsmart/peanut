@@ -1,6 +1,17 @@
 TODO
 ====
 
+Upgrading from
+github.com/360EntSecGroup-Skylar/excelize/v2 v2.3.2
+to
+github.com/xuri/excelize/v2 v2.6.1
+- seems to have given our output files +x permission. This is not good, and is unnecessary.
+
+Upgrading to v2.7.0 seems to have broken things, so I rolled back — now back to v2.3.2
+
+- Look into updating to v2.7.0
+- Check output file permissions when using v2.7.0
+
 
 - Writers
  - Should writers throw an error if the given type to write has no tagged fields?
